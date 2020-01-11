@@ -7,9 +7,15 @@
 
 package frc.robot;
 
+import com.revrobotics.ColorMatchResult;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.colorsensortest.*;
+import frc.robot.colorsensortest.ColorSensorClass.SpinnerColor;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private ColorSensorClass m_ColorSensorClass;
 
   private RobotContainer m_robotContainer;
 
@@ -28,6 +35,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    m_ColorSensorClass = new ColorSensorClass();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -42,6 +50,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("proximity sensor", m_ColorSensorClass.getProximity());
+    Color colorData = m_ColorSensorClass.getColor();
+    SpinnerColor colorMatch = m_ColorSensorClass.getColorMatch();
+    SmartDashboard.putString("Color match", colorMatch.toString());
+    SmartDashboard.putNumber("Red", colorData.red);
+    SmartDashboard.putNumber("Green", colorData.green);
+    SmartDashboard.putNumber("Blue", colorData.blue);
+
+    m_robotContainer.periodic();
+    
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -49,7 +67,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
   }
 
-  /**
+  /*
    * This function is called once each time the robot enters Disabled mode.
    */
   @Override
