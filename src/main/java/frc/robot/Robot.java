@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     SmartDashboard.putNumber("proximity sensor", m_ColorSensorClass.getProximity());
+    SmartDashboard.putNumber("distance", m_ColorSensorClass.getDistance());
     Color colorData = m_ColorSensorClass.getColor();
     SpinnerColor colorMatch = m_ColorSensorClass.getColorMatch();
     SmartDashboard.putString("Color match", colorMatch.toString());
