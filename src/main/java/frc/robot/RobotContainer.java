@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.subsystems.Drivetrain;
 
-import frc.robot.commands.Commands;
+// import frc.robot.commands.Commands;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -51,7 +51,7 @@ public class RobotContainer {
     //  -> m_drivetrain.setLowGear(true), m_drivetrain)).whenReleased(new InstantCommand(()
     //  -> m_drivetrain.setLowGear(false), m_drivetrain));
 
-    m_controlBoard.xbox.xButton.whenPressed(Commands.motionMagic(m_drivetrain, 12));
+    // m_controlBoard.xbox.xButton.whenPressed(Commands.motionMagic(m_drivetrain, 12));
   }
 
 
