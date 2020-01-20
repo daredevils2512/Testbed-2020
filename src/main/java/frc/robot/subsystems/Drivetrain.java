@@ -10,8 +10,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+// all shifters commented out as testbed has no shifters
+// import edu.wpi.first.wpilibj.DoubleSolenoid;
+// import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -103,4 +104,11 @@ public class Drivetrain extends SubsystemBase {
   public int inchesToEncoderTicks(double inches) {
     return (int)(inches / m_wheelCircumference / m_gearRatio * m_encoderResolution);
   }
+  // public boolean getLowGear() {
+  //   return m_shifter.get() == m_lowGearValue;
+  // }
+
+  // public void setLowGear(boolean wantsLowGear) {
+  //   m_shifter.set(wantsLowGear ? m_lowGearValue : m_highGearValue);
+  // }
 }
