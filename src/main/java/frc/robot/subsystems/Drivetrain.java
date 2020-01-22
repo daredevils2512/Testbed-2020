@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Encoder;
 // all shifters commented out as testbed has no shifters
@@ -29,18 +30,23 @@ public class Drivetrain extends SubsystemBase {
   private final int m_rightDriveMasterID = 4;
   private final int m_rightDrive1ID = 6;
 
+  private final int m_leftEncoderChannelA = 2;
+  private final int m_leftEncoderChannelB = 3;
+  private final int m_rightEncoderChannelA = 0;
+  private final int m_rightEncoderChannelB = 1;
+
   // private final int m_shifterForwardChannel = 0;
   // private final int m_shifterReverseChannel = 1;
   // private final DoubleSolenoid.Value m_highGearValue = Value.kForward;
   // private final DoubleSolenoid.Value m_lowGearValue = Value.kReverse;
 
-  private final WPI_TalonFX m_leftDriveMaster;
-  private final WPI_TalonFX m_leftDrive1;
-  private final WPI_TalonFX m_rightDriveMaster;
-  private final WPI_TalonFX m_rightDrive1;
+  protected final WPI_TalonSRX m_leftDriveMaster;
+  protected final WPI_TalonSRX m_leftDrive1;
+  protected final WPI_TalonSRX m_rightDriveMaster;
+  protected final WPI_TalonSRX m_rightDrive1;
 
-  private final Encoder m_leftEncoder;
-  private final Encoder m_rightEncoder;
+  protected final Encoder m_leftEncoder;
+  protected final Encoder m_rightEncoder;
 
   private final DifferentialDrive m_differentialDrive;
 
@@ -50,16 +56,16 @@ public class Drivetrain extends SubsystemBase {
    * Creates a new Drivetrain.
    */
   public Drivetrain() {
-    m_leftDriveMaster = new WPI_TalonFX(m_leftDriveMasterID);
-    m_leftDrive1 = new WPI_TalonFX(m_leftDrive1ID);
-    m_rightDriveMaster = new WPI_TalonFX(m_rightDriveMasterID);
-    m_rightDrive1 = new WPI_TalonFX(m_rightDrive1ID);
+    m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
+    m_leftDrive1 = new WPI_TalonSRX(m_leftDrive1ID);
+    m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
+    m_rightDrive1 = new WPI_TalonSRX(m_rightDrive1ID);
 
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);
 
-    m_leftEncoder = new Encoder(2, 3);
-    m_rightEncoder = new Encoder(0, 1);
+    m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
+    m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
 
     // m_leftDriveMaster.configSelectedFeedbackDevice(FeedbackDevice.);
 
@@ -105,7 +111,6 @@ public class Drivetrain extends SubsystemBase {
    * @param distance distance to go in inches
   */
   public void driveTo(final double distance) {
-
     m_leftDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
     m_rightDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
   }
