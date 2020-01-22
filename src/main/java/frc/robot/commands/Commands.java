@@ -9,6 +9,10 @@ import frc.robot.subsystems.Drivetrain;
 
 public class Commands {
     public static Command arcadeDrive(Drivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
-        return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
+      return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
+    }
+
+    public static Command motionMagic(Drivetrain drivetrain, double distance) {
+      return new RunCommand(() -> drivetrain.driveTo(distance), drivetrain);
     }
 }

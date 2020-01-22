@@ -8,8 +8,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.Encoder;
 // all shifters commented out as testbed has no shifters
 // import edu.wpi.first.wpilibj.DoubleSolenoid;
 // import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -37,6 +39,9 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonFX m_rightDriveMaster;
   private final WPI_TalonFX m_rightDrive1;
 
+  private final Encoder m_leftEncoder;
+  private final Encoder m_rightEncoder;
+
   private final DifferentialDrive m_differentialDrive;
 
   // private final DoubleSolenoid m_shifter;
@@ -53,6 +58,11 @@ public class Drivetrain extends SubsystemBase {
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);
 
+    m_leftEncoder = new Encoder(2, 3);
+    m_rightEncoder = new Encoder(0, 1);
+
+    // m_leftDriveMaster.configSelectedFeedbackDevice(FeedbackDevice.);
+
     m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
 
     // m_shifter = new DoubleSolenoid(m_shifterForwardChannel, m_shifterReverseChannel);
@@ -64,6 +74,8 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
     // SmartDashboard.putNumber("left Current", getCurrent()[0]);
     // SmartDashboard.putNumber("right Current", getCurrent()[1]);
+    SmartDashboard.putNumber("left ticks", getLeftEncoderTicks());
+    SmartDashboard.putNumber("left inches", encoderTicksToInches(getLeftEncoderTicks()));
   }
 
   public void arcadeDrive(double move, double turn) {
@@ -92,9 +104,18 @@ public class Drivetrain extends SubsystemBase {
    * drives forward using motion magic
    * @param distance distance to go in inches
   */
-  public void drive(final double distance) {
+  public void driveTo(final double distance) {
+
     m_leftDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
     m_rightDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
+  }
+
+  public int getLeftEncoderTicks() {
+    return m_leftEncoder.get();
+  }
+
+  public int getRightEncoderTicks() {
+    return m_rightEncoder.get();
   }
 
   public double encoderTicksToInches(int number) {
