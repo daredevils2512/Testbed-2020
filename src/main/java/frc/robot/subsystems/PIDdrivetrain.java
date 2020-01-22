@@ -18,10 +18,7 @@ public class PIDdrivetrain extends Drivetrain {
   private PIDdrive leftPIDdrive;
 
   private NetworkTable m_networkTable;
-
-
-
-
+  
   private double k_lP = 0.0; //left PID
   private double k_lI = 0.0; //TODO: tune these
   private double k_lD = 0.0;
@@ -70,6 +67,10 @@ public class PIDdrivetrain extends Drivetrain {
     protected double getMeasurement() {
       return m_encoder.getDistance();
     }
+
+    public void setPID(double kP, double kI, double kD) {
+      m_controller.setPID(kP, kI, kD);
+    }
   }
 
   @Override
@@ -80,10 +81,9 @@ public class PIDdrivetrain extends Drivetrain {
     k_rP = m_networkTable.getEntry("right drivetrain D").getDouble(0.0);
     k_rI = m_networkTable.getEntry("right drivetrain D").getDouble(0.0);
     k_rD = m_networkTable.getEntry("right drivetrain D").getDouble(0.0);
-    m_leftPIDcontroller.setPID(k_lP, k_lI, k_lD);
-    m_rightPIDcontroller.setPID(k_rP, k_rI, k_rD);
+    leftPIDdrive.setPID(k_lP, k_lI, k_lD);
+    rightPIDdrive.setPID(k_rP, k_rI, k_rD);
     super.periodic(); 
-    
   }
 
   public void driveDistance(double inches) {
