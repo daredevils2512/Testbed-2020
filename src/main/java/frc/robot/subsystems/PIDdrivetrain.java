@@ -59,7 +59,7 @@ public class PIDdrivetrain extends Drivetrain {
 
     @Override
     protected double getMeasurement() {
-      return m_encoder.getDistance();
+      return m_encoder.get();
     }
 
     public void setPID(double kP, double kI, double kD) {
