@@ -39,6 +39,8 @@ public class PIDdrivetrain extends Drivetrain {
 
     rightPIDdrive = new PIDdrive(m_rightDriveMaster, m_rightEncoder, m_rightPIDcontroller);
     leftPIDdrive = new PIDdrive(m_leftDriveMaster, m_leftEncoder, m_leftPIDcontroller);
+    rightPIDdrive.setName("right PID drivetrain");
+    leftPIDdrive.setName("left PID drivetrain");
   }
 
   private class PIDdrive extends PIDSubsystem {
@@ -59,7 +61,7 @@ public class PIDdrivetrain extends Drivetrain {
 
     @Override
     protected double getMeasurement() {
-      return m_encoder.get();
+      return m_encoder.getDistance();
     }
 
     public void setPID(double kP, double kI, double kD) {
@@ -81,7 +83,7 @@ public class PIDdrivetrain extends Drivetrain {
   }
 
   public void driveDistance(double inches) {
-    setSetPoint(inchesToEncoderTicks(inches), inchesToEncoderTicks(inches));
+    setSetPoint(inches, inches);
   }
 
   public void setSetPoint(double left, double right) {
