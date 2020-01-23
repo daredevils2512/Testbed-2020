@@ -1,13 +1,11 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
 public class PIDdrivetrain extends Drivetrain {
@@ -17,8 +15,6 @@ public class PIDdrivetrain extends Drivetrain {
   private PIDdrive rightPIDdrive;
   private PIDdrive leftPIDdrive;
 
-  private NetworkTable m_networkTable;
-  
   private double k_lP = 0.0; //left PID
   private double k_lI = 0.0; //TODO: tune these
   private double k_lD = 0.0;
@@ -27,21 +23,19 @@ public class PIDdrivetrain extends Drivetrain {
   private double k_rI = 0.0;
   private double k_rD = 0.0;
 
-  public PIDdrivetrain(NetworkTable netowrkTable) {
-
-    m_networkTable = netowrkTable;
+  public PIDdrivetrain() {
 
     m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD);
     m_rightPIDcontroller = new PIDController(k_rP, k_rI, k_rD);
     m_leftPIDcontroller.setTolerance(0.1);
     m_rightPIDcontroller.setTolerance(0.1);
 
-    m_networkTable.getEntry("left drivetrain P").setNumber(k_lP);
-    m_networkTable.getEntry("left drivetrain I").setNumber(k_lI);
-    m_networkTable.getEntry("left drivetrain D").setNumber(k_lD);
-    m_networkTable.getEntry("right drivetrian P").setNumber(k_rP);
-    m_networkTable.getEntry("right drivetrian I").setNumber(k_rI);
-    m_networkTable.getEntry("right drivetrian D").setNumber(k_rD);
+    SmartDashboard.getEntry("left drivetrain P").setNumber(k_lP);
+    SmartDashboard.getEntry("left drivetrain I").setNumber(k_lI);
+    SmartDashboard.getEntry("left drivetrain D").setNumber(k_lD);
+    SmartDashboard.getEntry("right drivetrian P").setNumber(k_rP);
+    SmartDashboard.getEntry("right drivetrian I").setNumber(k_rI);
+    SmartDashboard.getEntry("right drivetrian D").setNumber(k_rD);
 
     rightPIDdrive = new PIDdrive(m_rightDriveMaster, m_rightEncoder, m_rightPIDcontroller);
     leftPIDdrive = new PIDdrive(m_leftDriveMaster, m_leftEncoder, m_leftPIDcontroller);
@@ -75,19 +69,19 @@ public class PIDdrivetrain extends Drivetrain {
 
   @Override
   public void periodic() {
-    k_lP = m_networkTable.getEntry("left drivetrain P").getDouble(0.0);
-    k_lI = m_networkTable.getEntry("left drivetrain I").getDouble(0.0);
-    k_lD = m_networkTable.getEntry("left drivetrain D").getDouble(0.0);
-    k_rP = m_networkTable.getEntry("right drivetrain D").getDouble(0.0);
-    k_rI = m_networkTable.getEntry("right drivetrain D").getDouble(0.0);
-    k_rD = m_networkTable.getEntry("right drivetrain D").getDouble(0.0);
+    k_lP = SmartDashboard.getEntry("left drivetrain P").getDouble(0.0);
+    k_lI = SmartDashboard.getEntry("left drivetrain I").getDouble(0.0);
+    k_lD = SmartDashboard.getEntry("left drivetrain D").getDouble(0.0);
+    k_rP = SmartDashboard.getEntry("right drivetrain D").getDouble(0.0);
+    k_rI = SmartDashboard.getEntry("right drivetrain D").getDouble(0.0);
+    k_rD = SmartDashboard.getEntry("right drivetrain D").getDouble(0.0);
     leftPIDdrive.setPID(k_lP, k_lI, k_lD);
     rightPIDdrive.setPID(k_rP, k_rI, k_rD);
     super.periodic(); 
   }
 
   public void driveDistance(double inches) {
-    this.setSetPoint(this.inchesToEncoderTicks(inches), this.inchesToEncoderTicks(inches));
+    setSetPoint(inchesToEncoderTicks(inches), inchesToEncoderTicks(inches));
   }
 
   public void setSetPoint(double left, double right) {

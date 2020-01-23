@@ -29,6 +29,7 @@ import frc.robot.commands.*;
 public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final Drivetrain m_drivetrain = new Drivetrain();
+  private final PIDdrivetrain m_PIDdrivetrian = new PIDdrivetrain();
 
   private final Command m_autoCommand;
 
@@ -51,9 +52,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // m_controlBoard.xbox.aButton.whenPressed(new InstantCommand(() -> m_drivetrain.setLowGear(true), m_drivetrain)).whenReleased(new InstantCommand(() -> m_drivetrain.setLowGear(false), m_drivetrain));
-    m_controlBoard.xbox.xButton.whileHeld(Commands.motionMagic(m_drivetrain, 12));
+    // m_controlBoard.xbox.xButton.whileHeld(Commands.motionMagic(m_drivetrain, 12));
     m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCells));
     m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCellsLimelight));
+    m_controlBoard.xbox.aButton.whenPressed(Commands.driveinches(m_PIDdrivetrian, 12));
   }
 
 
