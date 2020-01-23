@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.controlboard.ControlBoard;
-import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PIDdrivetrain;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
@@ -28,8 +27,7 @@ import frc.robot.commands.*;
  */
 public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
-  private final Drivetrain m_drivetrain = new Drivetrain();
-  private final PIDdrivetrain m_PIDdrivetrian = new PIDdrivetrain();
+  private final PIDdrivetrain m_PIDdrivetrain = new PIDdrivetrain();
 
   private final Command m_autoCommand;
 
@@ -37,8 +35,7 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_drivetrain.init();
-    m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.arcadeDrive(m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()), m_drivetrain));
+    m_PIDdrivetrain.setDefaultCommand(new RunCommand(() -> m_PIDdrivetrain.arcadeDrive(m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()), m_PIDdrivetrain));
 
     configureButtonBindings();
 
@@ -54,9 +51,9 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // m_controlBoard.xbox.aButton.whenPressed(new InstantCommand(() -> m_drivetrain.setLowGear(true), m_drivetrain)).whenReleased(new InstantCommand(() -> m_drivetrain.setLowGear(false), m_drivetrain));
     // m_controlBoard.xbox.xButton.whileHeld(Commands.motionMagic(m_drivetrain, 12));
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCells));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCellsLimelight));
-    m_controlBoard.xbox.aButton.whenPressed(Commands.driveinches(m_PIDdrivetrian, 12));
+    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCells));
+    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCellsLimelight));
+    m_controlBoard.xbox.aButton.whenPressed(Commands.driveinches(m_PIDdrivetrain, 12));
   }
 
 

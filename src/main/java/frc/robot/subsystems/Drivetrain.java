@@ -62,6 +62,13 @@ public class Drivetrain extends SubsystemBase {
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);
 
+    m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
+    m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
+
+    m_rightEncoder.setReverseDirection(true);
+    m_leftEncoder.setDistancePerPulse(0.0236065636);
+    m_rightEncoder.setDistancePerPulse(0.0236065636);
+
     // m_leftDriveMaster.configSelectedFeedbackDevice(FeedbackDevice.);
 
     m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
@@ -70,18 +77,15 @@ public class Drivetrain extends SubsystemBase {
 
   }
 
-  public void init() {
-    m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
-    m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     // SmartDashboard.putNumber("left Current", getCurrent()[0]);
     // SmartDashboard.putNumber("right Current", getCurrent()[1]);
     SmartDashboard.putNumber("left ticks", getLeftEncoderTicks());
-    SmartDashboard.putNumber("left inches", encoderTicksToInches(getLeftEncoderTicks()));
+    SmartDashboard.putNumber("left inches", getLeftEncoderDistance());
+    SmartDashboard.putNumber("right ticks", getRightEncoderTicks());
+    SmartDashboard.putNumber("right inches", getRightEncoderDistance());
   }
 
   public void arcadeDrive(double move, double turn) {
@@ -119,17 +123,18 @@ public class Drivetrain extends SubsystemBase {
     return m_leftEncoder.get();
   }
 
+  public double getLeftEncoderDistance() {
+    return m_leftEncoder.getDistance();
+  }
+
   public int getRightEncoderTicks() {
     return m_rightEncoder.get();
   }
 
-  public double encoderTicksToInches(int number) {
-    return (double)number / m_encoderResolution * m_gearRatio * m_wheelCircumference;
+  public double getRightEncoderDistance() {
+    return m_rightEncoder.getDistance();
   }
 
-  public int inchesToEncoderTicks(double inches) {
-    return (int)(inches / m_wheelCircumference / m_gearRatio * m_encoderResolution);
-  }
   // public boolean getLowGear() {
   //   return m_shifter.get() == m_lowGearValue;
   // }
