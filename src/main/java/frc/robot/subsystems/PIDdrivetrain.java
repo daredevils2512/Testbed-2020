@@ -82,10 +82,6 @@ public class PIDdrivetrain extends Drivetrain {
     super.periodic(); 
   }
 
-  public void driveDistance(double inches) {
-    setSetPoint(inches, inches);
-  }
-
   public void setSetPoint(double left, double right) {
     leftPIDdrive.setSetpoint(left);
     rightPIDdrive.setSetpoint(right);

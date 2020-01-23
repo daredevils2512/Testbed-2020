@@ -15,6 +15,6 @@ public class Commands {
     }
 
     public static Command driveinches(PIDdrivetrain drivetrain, double inches) {
-      return new InstantCommand(() -> drivetrain.driveDistance(inches), drivetrain);
+      return new InstantCommand(() -> drivetrain.setSetPoint(inches, inches), drivetrain);
     }
 }
