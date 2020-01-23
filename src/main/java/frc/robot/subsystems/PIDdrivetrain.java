@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -28,7 +26,6 @@ public class PIDdrivetrain extends Drivetrain {
   private double k_rD = 0.0;
 
   public PIDdrivetrain(NetworkTable netowrkTable) {
-
     m_networkTable = netowrkTable;
 
     m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD);

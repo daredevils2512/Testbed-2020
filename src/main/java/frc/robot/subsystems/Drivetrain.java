@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.Encoder;
 // all shifters commented out as testbed has no shifters
 // import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -56,6 +57,7 @@ public class Drivetrain extends SubsystemBase {
    * Creates a new Drivetrain.
    */
   public Drivetrain() {
+
     m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
     m_leftDrive1 = new WPI_TalonSRX(m_leftDrive1ID);
     m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
@@ -82,6 +84,8 @@ public class Drivetrain extends SubsystemBase {
     // SmartDashboard.putNumber("right Current", getCurrent()[1]);
     SmartDashboard.putNumber("left ticks", getLeftEncoderTicks());
     SmartDashboard.putNumber("left inches", encoderTicksToInches(getLeftEncoderTicks()));
+    SmartDashboard.putNumber("right ticks", getRightEncoderTicks());
+    SmartDashboard.putNumber("right inches", encoderTicksToInches(getRightEncoderTicks()));
   }
 
   public void arcadeDrive(double move, double turn) {
