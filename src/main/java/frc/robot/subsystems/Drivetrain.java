@@ -60,8 +60,6 @@ public class Drivetrain extends SubsystemBase {
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);
 
-    // m_leftDriveMaster.configSelectedFeedbackDevice(FeedbackDevice.);
-
     m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
 
     // m_shifter = new DoubleSolenoid(m_shifterForwardChannel, m_shifterReverseChannel);
@@ -84,16 +82,6 @@ public class Drivetrain extends SubsystemBase {
   public void arcadeDrive(double move, double turn) {
     m_differentialDrive.arcadeDrive(move, turn);
   }
-  
-  // /**
-  //  * @return left current[0] and right current[1]
-  //  */
-  // public double[] getCurrent() {
-  //   double[] outputCurrent = new double[2];
-  //   outputCurrent[0] = m_leftDrive1.getStatorCurrent();
-  //   outputCurrent[1] = m_rightDrive1.getStatorCurrent();
-  //   return outputCurrent;
-  // }
 
   // public boolean getLowGear() {
   //   return m_shifter.get() == m_lowGearValue;
@@ -101,15 +89,6 @@ public class Drivetrain extends SubsystemBase {
 
   // public void setLowGear(boolean wantsLowGear) {
   //   m_shifter.set(wantsLowGear ? m_lowGearValue : m_highGearValue);
-  // }
-
-  // /**
-  //  * drives forward using motion magic
-  //  * @param distance distance to go in inches
-  // */
-  // public void driveTo(final double distance) {
-  //   m_leftDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
-  //   m_rightDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
   // }
 
   public int getLeftEncoderTicks() {
