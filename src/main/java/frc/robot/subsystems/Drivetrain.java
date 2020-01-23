@@ -41,8 +41,8 @@ public class Drivetrain extends SubsystemBase {
   protected final WPI_TalonSRX m_rightDriveMaster;
   protected final WPI_TalonSRX m_rightDrive1;
 
-  protected final Encoder m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
-  protected final Encoder m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
+  protected Encoder m_leftEncoder;
+  protected Encoder m_rightEncoder;
 
   private final DifferentialDrive m_differentialDrive;
 
@@ -66,6 +66,11 @@ public class Drivetrain extends SubsystemBase {
 
     // m_shifter = new DoubleSolenoid(m_shifterForwardChannel, m_shifterReverseChannel);
 
+  }
+
+  public void init() {
+    m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
+    m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
   }
 
   @Override
