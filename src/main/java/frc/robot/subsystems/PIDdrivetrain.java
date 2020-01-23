@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
@@ -43,12 +43,11 @@ public class PIDdrivetrain extends Drivetrain {
 
   private class PIDdrive extends PIDSubsystem {
     private PIDController m_controller;
-    private WPI_TalonSRX m_motor;
+    private BaseTalon m_motor;
     private Encoder m_encoder;
 
-    public PIDdrive(WPI_TalonSRX motor, Encoder encoder, PIDController controller) {
+    public PIDdrive(BaseTalon motor, Encoder encoder, PIDController controller) {
       super(controller);
-      m_motor = motor;
       m_controller = controller;
     }
 
