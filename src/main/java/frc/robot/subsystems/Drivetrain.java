@@ -7,12 +7,7 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.Encoder;
 // all shifters commented out as testbed has no shifters
 // import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -31,10 +26,10 @@ public class Drivetrain extends SubsystemBase {
   private final int m_rightDriveMasterID = 4;
   private final int m_rightDrive1ID = 6;
 
-  private final int m_leftEncoderChannelA = 2;
-  private final int m_leftEncoderChannelB = 3;
+  private final int m_leftEncoderChannelA = 2; 
+  private final int m_leftEncoderChannelB = 3; 
   private final int m_rightEncoderChannelA = 0;
-  private final int m_rightEncoderChannelB = 1;
+  private final int m_rightEncoderChannelB = 1; 
 
   // private final int m_shifterForwardChannel = 0;
   // private final int m_shifterReverseChannel = 1;
@@ -57,6 +52,8 @@ public class Drivetrain extends SubsystemBase {
    * Creates a new Drivetrain.
    */
   public Drivetrain() {
+    m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
+    m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
 
     m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
     m_leftDrive1 = new WPI_TalonSRX(m_leftDrive1ID);
@@ -65,9 +62,6 @@ public class Drivetrain extends SubsystemBase {
 
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);
-
-    m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
-    m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
 
     // m_leftDriveMaster.configSelectedFeedbackDevice(FeedbackDevice.);
 
@@ -110,14 +104,14 @@ public class Drivetrain extends SubsystemBase {
   //   m_shifter.set(wantsLowGear ? m_lowGearValue : m_highGearValue);
   // }
 
-  /**
-   * drives forward using motion magic
-   * @param distance distance to go in inches
-  */
-  public void driveTo(final double distance) {
-    m_leftDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
-    m_rightDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
-  }
+  // /**
+  //  * drives forward using motion magic
+  //  * @param distance distance to go in inches
+  // */
+  // public void driveTo(final double distance) {
+  //   m_leftDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
+  //   m_rightDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
+  // }
 
   public int getLeftEncoderTicks() {
     return m_leftEncoder.get();
