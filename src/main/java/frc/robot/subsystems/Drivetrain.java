@@ -43,8 +43,8 @@ public class Drivetrain extends SubsystemBase {
   protected final WPI_TalonSRX m_rightDriveMaster;
   protected final WPI_TalonSRX m_rightDrive1;
 
-  protected final Encoder m_leftEncoder;
-  protected final Encoder m_rightEncoder;
+  protected final Encoder m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
+  protected final Encoder m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
 
   private final DifferentialDrive m_differentialDrive;
 
@@ -54,9 +54,6 @@ public class Drivetrain extends SubsystemBase {
    * Creates a new Drivetrain.
    */
   public Drivetrain() {
-    m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
-    m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
-
     m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
     m_leftDrive1 = new WPI_TalonSRX(m_leftDrive1ID);
     m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
