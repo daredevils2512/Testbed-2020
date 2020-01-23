@@ -75,9 +75,6 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("left Current", getCurrent()[0]);
-    // SmartDashboard.putNumber("right Current", getCurrent()[1]);
     SmartDashboard.putNumber("left ticks", getLeftEncoderTicks());
     SmartDashboard.putNumber("left inches", encoderTicksToInches(getLeftEncoderTicks()));
     SmartDashboard.putNumber("right ticks", getRightEncoderTicks());
@@ -121,6 +118,11 @@ public class Drivetrain extends SubsystemBase {
 
   public int getRightEncoderTicks() {
     return m_rightEncoder.get();
+  }
+
+  public void resetEncoders() {
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
   }
 
   public double encoderTicksToInches(int number) {
