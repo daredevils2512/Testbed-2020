@@ -41,6 +41,8 @@ public class PIDdrivetrain extends Drivetrain {
     leftPIDdrive = new PIDdrive(m_leftDriveMaster, m_leftEncoder, m_leftPIDcontroller);
     rightPIDdrive.setName("right PID drivetrain");
     leftPIDdrive.setName("left PID drivetrain");
+    rightPIDdrive.enable();
+    leftPIDdrive.enable();
   }
 
   private class PIDdrive extends PIDSubsystem {
@@ -52,16 +54,23 @@ public class PIDdrivetrain extends Drivetrain {
       super(controller);
       m_motor = motor;
       m_controller = controller;
+      m_controller.setTolerance(0.1);
     }
 
     @Override
     protected void useOutput(double output, double setpoint) {
+      System.out.println("ran PID");
       m_motor.set(ControlMode.PercentOutput, output);
     }
 
     @Override
     protected double getMeasurement() {
       return m_encoder.getDistance();
+    }
+
+    @Override
+    public void periodic() {
+      super.periodic();
     }
 
     public void setPID(double kP, double kI, double kD) {
@@ -79,10 +88,13 @@ public class PIDdrivetrain extends Drivetrain {
     k_rD = SmartDashboard.getEntry("right drivetrain D").getDouble(0.0);
     leftPIDdrive.setPID(k_lP, k_lI, k_lD);
     rightPIDdrive.setPID(k_rP, k_rI, k_rD);
+    leftPIDdrive.periodic();
+    rightPIDdrive.periodic();
     super.periodic(); 
   }
 
   public void setSetPoint(double left, double right) {
+    System.out.println("set setpoint");
     leftPIDdrive.setSetpoint(left);
     rightPIDdrive.setSetpoint(right);
   }
