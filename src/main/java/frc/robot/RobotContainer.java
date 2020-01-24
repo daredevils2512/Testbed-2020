@@ -54,6 +54,7 @@ public class RobotContainer {
     m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCells));
     m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCellsLimelight));
     m_controlBoard.xbox.aButton.whenPressed(Commands.driveinches(m_PIDdrivetrain, 12));
+    m_controlBoard.xbox.xButton.whenPressed(new PIDDrive(m_PIDdrivetrain, 12));
   }
 
   /**
