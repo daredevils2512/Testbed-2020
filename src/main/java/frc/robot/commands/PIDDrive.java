@@ -18,9 +18,8 @@ public class PIDDrive extends CommandBase {
 
   @Override
   public void execute() {
-    m_leftCurrentPos = SmartDashboard.getNumber("left inches", 0.0);
-    m_rightCurrentPos = SmartDashboard.getNumber("right inches", 0.0);
-    System.out.println("ran command");
+    m_leftCurrentPos = m_PIDdrivetrain.getLeftEncoderDistance();
+    m_rightCurrentPos = m_PIDdrivetrain.getRightEncoderDistance();
     m_PIDdrivetrain.setSetPoint(m_forward + m_leftCurrentPos, m_forward + m_rightCurrentPos);
   }
 
