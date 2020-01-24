@@ -56,7 +56,6 @@ public class RobotContainer {
     m_controlBoard.xbox.aButton.whenPressed(Commands.driveinches(m_PIDdrivetrain, 12));
   }
 
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
