@@ -12,6 +12,7 @@ public class PIDDrive extends CommandBase {
     m_forward = forward;
     m_turn = turn;
     m_PIDdrivetrain = PIDdrivetrain;
+    addRequirements(PIDdrivetrain);
   }
 
   @Override
