@@ -37,10 +37,10 @@ public class PIDdrivetrain extends Drivetrain {
     SmartDashboard.getEntry("right drivetrian I").setNumber(k_rI);
     SmartDashboard.getEntry("right drivetrian D").setNumber(k_rD);
 
-    rightPIDdrive = new PIDdrive(m_rightDriveMaster, m_rightEncoder, m_rightPIDcontroller);
     leftPIDdrive = new PIDdrive(m_leftDriveMaster, m_leftEncoder, m_leftPIDcontroller);
-    rightPIDdrive.enable();
+    rightPIDdrive = new PIDdrive(m_rightDriveMaster, m_rightEncoder, m_rightPIDcontroller);
     leftPIDdrive.enable();
+    rightPIDdrive.enable();
   }
 
   private class PIDdrive extends PIDSubsystem {
