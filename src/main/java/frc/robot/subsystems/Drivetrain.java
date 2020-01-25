@@ -7,7 +7,10 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
+
 import edu.wpi.first.wpilibj.Encoder;
 // all shifters commented out as testbed has no shifters
 // import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -37,8 +40,14 @@ public class Drivetrain extends SubsystemBase {
   protected final WPI_TalonSRX m_rightDriveMaster;
   protected final WPI_TalonSRX m_rightDrive1;
 
+  protected final WPI_TalonFX m_falcon;
+
   protected Encoder m_leftEncoder;
   protected Encoder m_rightEncoder;
+
+  private final int m_pigeonID = 0;
+  private final PigeonIMU m_pigeon; 
+  private double[] ypr = {0.0, 0.0, 0.0};
 
   // protected final DifferentialDrive m_differentialDrive;
 
@@ -52,6 +61,7 @@ public class Drivetrain extends SubsystemBase {
     m_leftDrive1 = new WPI_TalonSRX(m_leftDrive1ID);
     m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
     m_rightDrive1 = new WPI_TalonSRX(m_rightDrive1ID);
+    m_falcon = new WPI_TalonFX(12);
 
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);
@@ -62,6 +72,10 @@ public class Drivetrain extends SubsystemBase {
     m_rightEncoder.setReverseDirection(true);
     m_leftEncoder.setDistancePerPulse(0.0236065636);
     m_rightEncoder.setDistancePerPulse(0.0236065636);
+
+    m_pigeon = new PigeonIMU(m_pigeonID);
+    m_pigeon.configFactoryDefault();
+    resetGyro();
 
     // m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
 
@@ -75,6 +89,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("left inches", getLeftEncoderDistance());
     SmartDashboard.putNumber("right ticks", getRightEncoderTicks());
     SmartDashboard.putNumber("right inches", getRightEncoderDistance());
+    SmartDashboard.putNumber("yaw", getYaw());
+    SmartDashboard.putNumber("pitch", getPitch());
+    SmartDashboard.putNumber("roll", getRoll());
   }
 
   public void arcadeDrive(double move, double turn) {
@@ -97,12 +114,56 @@ public class Drivetrain extends SubsystemBase {
     return m_leftEncoder.getDistance();
   }
 
+  public double getLeftEncoderRate() {
+    return m_leftEncoder.getRate();
+  }
+
   public int getRightEncoderTicks() {
     return m_rightEncoder.get();
   }
 
   public double getRightEncoderDistance() {
     return m_rightEncoder.getDistance();
+  }
+
+  public double getRightEncoderRate() {
+    return m_rightEncoder.getRate();
+  }
+
+  public void resetEncoders() {
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
+  }
+
+  public double[] getYPR() {
+    this.m_pigeon.getYawPitchRoll(ypr);
+    return ypr;
+  }
+
+  public double getYaw() {
+    return getYPR()[0];
+  }
+
+  public double getPitch() {
+    return getYPR()[1];
+  }
+
+  public double getRoll() {
+    return getYPR()[2];
+  }
+
+  public void resetGyro() {
+    m_pigeon.setYaw(0.0);
+    m_pigeon.setFusedHeading(0.0);
+    m_pigeon.setAccumZAngle(0.0);
+  }
+
+  public boolean getHasResetGyro() {
+    return m_pigeon.hasResetOccurred();
+  }
+
+  public void falcon(Double speed) {
+    m_falcon.set(speed);
   }
 
   // public boolean getLowGear() {

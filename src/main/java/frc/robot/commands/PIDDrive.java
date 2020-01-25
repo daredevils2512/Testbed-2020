@@ -17,7 +17,7 @@ public class PIDDrive extends CommandBase {
 
   @Override
   public void execute() {
-    m_PIDdrivetrain.PIDarcade(m_forward, m_turn);
+    m_PIDdrivetrain.drive(m_forward, m_turn);
   }
 
   @Override

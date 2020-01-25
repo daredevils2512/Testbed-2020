@@ -1,3 +1,5 @@
+package frc.robot.subsystems;
+
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2019-2020 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
@@ -22,7 +24,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 /**
  * Represents a differential drive style drivetrain.
  */
-public class Drivetrain {
+public class exampledrive {
   public static final double kMaxSpeed = 3.0; // meters per second
   public static final double kMaxAngularSpeed = 2 * Math.PI; // one rotation per second
 
@@ -60,7 +62,7 @@ public class Drivetrain {
    * Constructs a differential drive object.
    * Sets the encoder distance per pulse and resets the gyro.
    */
-  public Drivetrain() {
+  public exampledrive() {
     m_gyro.reset();
 
     // Set the distance per pulse for the drive encoders. We can simply use the

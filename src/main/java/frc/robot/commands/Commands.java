@@ -14,7 +14,7 @@ public class Commands {
       return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
     }
 
-    public static Command driveinches(PIDdrivetrain drivetrain, double inches) {
-      return new InstantCommand(() -> drivetrain.addSetPoint(inches, inches), drivetrain);
+    public static RunCommand dummy(Drivetrain drivetrain, Double speed) {
+      return new RunCommand(() -> drivetrain.falcon(speed));
     }
 }

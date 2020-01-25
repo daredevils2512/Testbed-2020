@@ -1,19 +1,17 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
 public class PIDdrivetrain extends Drivetrain {
   protected PIDController m_leftPIDcontroller;
   protected PIDController m_rightPIDcontroller;
-
-  private PIDdrive leftPIDdrive;
-  private PIDdrive rightPIDdrive;
   
   private double k_lP = 5.0; //left PID
   private double k_lI = 0.0; //TODO: tune these
@@ -22,6 +20,22 @@ public class PIDdrivetrain extends Drivetrain {
   private double k_rP = -5.0; //right PID -- right P has to be negative i think
   private double k_rI = 0.0; 
   private double k_rD = 0.0;
+
+  private final double m_trackWidth = 0.67;
+  private final double k_staticGain = 1;
+  private final double k_velocityGain = 2;
+  public final double k_maxSpeed = 15; //max speed in m/s
+  public final double k_maxTurn = Math.PI; //max turn rate radians/s
+
+  private double leftFeedForeward;
+  private double rightFeedForeward;
+  private double rightOutput;
+  private double leftOutput;
+
+  private DifferentialDriveKinematics m_kinematics;
+  private DifferentialDriveOdometry m_odometry;
+  private SimpleMotorFeedforward m_feedforward;
+  private DifferentialDriveWheelSpeeds wheelSpeeds;
 
   public PIDdrivetrain() {
     
@@ -35,83 +49,46 @@ public class PIDdrivetrain extends Drivetrain {
     SmartDashboard.getEntry("right drivetrian I").setNumber(k_rI);
     SmartDashboard.getEntry("right drivetrian D").setNumber(k_rD);
 
-    leftPIDdrive = new PIDdrive(m_leftDriveMaster, m_leftEncoder, m_leftPIDcontroller);
-    rightPIDdrive = new PIDdrive(m_rightDriveMaster, m_rightEncoder, m_rightPIDcontroller);
-    leftPIDdrive.enable();
-    rightPIDdrive.enable();
-  }
+    resetGyro();
+    resetEncoders();
 
-  private class PIDdrive extends PIDSubsystem {
-    private PIDController m_controller;
-    private WPI_TalonSRX m_motor;
-    private Encoder m_encoder;
-
-    public PIDdrive(WPI_TalonSRX motor, Encoder encoder, PIDController controller) {
-      super(controller);
-      m_motor = motor;
-      m_controller = controller;
-      m_encoder = encoder;
-      m_controller.setTolerance(0.1);
-    }
-
-    @Override
-    protected void useOutput(double output, double setpoint) {
-      m_motor.set(ControlMode.PercentOutput, output);
-    }
-
-    @Override
-    protected double getMeasurement() {
-      return m_encoder.getDistance();
-    }
-
-    @Override
-    public void periodic() {
-      super.periodic();
-    }
-
-    public void setPID(double kP, double kI, double kD) {
-      m_controller.setPID(kP, kI, kD);
-    }
+    m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
+    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getYaw()));
+    m_feedforward = new SimpleMotorFeedforward(k_staticGain, k_velocityGain);
+    wheelSpeeds = new DifferentialDriveWheelSpeeds();
   }
 
   @Override
   public void periodic() {
+    super.periodic(); 
     k_lP = SmartDashboard.getEntry("left drivetrain P").getDouble(0.0);
     k_lI = SmartDashboard.getEntry("left drivetrain I").getDouble(0.0);
     k_lD = SmartDashboard.getEntry("left drivetrain D").getDouble(0.0);
     k_rP = SmartDashboard.getEntry("right drivetrain P").getDouble(0.0);
     k_rI = SmartDashboard.getEntry("right drivetrain I").getDouble(0.0);
     k_rD = SmartDashboard.getEntry("right drivetrain D").getDouble(0.0);
-    leftPIDdrive.setPID(k_lP, k_lI, k_lD);
-    rightPIDdrive.setPID(k_rP, k_rI, k_rD);
-    super.periodic(); 
+    updateOdometry();
+    SmartDashboard.putNumber("left feed forewweard", leftFeedForeward);
+    SmartDashboard.putNumber("right feed foreward", rightFeedForeward);
+    SmartDashboard.putNumber("left output", leftOutput);
+    SmartDashboard.putNumber("right output", rightOutput);
   }
 
-  /**
-   * sets a setpoint in inches; make left and right different for turning
-   * @param left left drive
-   * @param right right drive
-   */
-  public void setSetPoint(double left, double right) {
-    leftPIDdrive.setSetpoint(left);
-    rightPIDdrive.setSetpoint(right);
-  }
-  
-  /**
-   * adds a setpoint to its current position to go the amount reletive to its current position
-   * @param left left distance
-   * @param right right distance
-   */
-  public void addSetPoint(double left, double right) {
-    setSetPoint(leftPIDdrive.getMeasurement() + left, rightPIDdrive.getMeasurement() + right);
+  public void driveMotors(DifferentialDriveWheelSpeeds speeds) {
+    leftFeedForeward = m_feedforward.calculate(speeds.leftMetersPerSecond);
+    rightFeedForeward = m_feedforward.calculate(speeds.rightMetersPerSecond);
+    leftOutput = m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
+    rightOutput = m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
+    m_leftDriveMaster.setVoltage(leftOutput + leftFeedForeward);
+    m_rightDriveMaster.setVoltage(rightOutput + rightFeedForeward);
   }
 
-  /**
-   * arcade drive for PID drivetrain concept
-   * @param speed how far foreward it should go in the next period in inches
-   * @param turn how much turniness it should do in the next period in inches
-   */
-  public void PIDarcade(double speed, double turn) {
-    addSetPoint(speed + turn, speed - turn);
+  public void drive(double xSpeed, double rot) {
+    wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
+    driveMotors(wheelSpeeds);
+  }
+
+  public void updateOdometry() {
+    m_odometry.update(Rotation2d.fromDegrees(getYaw()), getLeftEncoderDistance(), getRightEncoderDistance());
   }
 }

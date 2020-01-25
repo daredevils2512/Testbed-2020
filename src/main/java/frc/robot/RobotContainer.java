@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,6 +29,8 @@ import frc.robot.commands.*;
 public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final PIDdrivetrain m_PIDdrivetrain = new PIDdrivetrain();
+  private final SlewRateLimiter moveLimiter;
+  private final SlewRateLimiter turnLimiter;
 
   private final Command m_autoCommand;
 
@@ -35,8 +38,12 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_PIDdrivetrain.setDefaultCommand(new PIDDrive(m_PIDdrivetrain, m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()));
-
+    moveLimiter = new SlewRateLimiter(3);
+    turnLimiter = new SlewRateLimiter(3);
+    
+    // m_PIDdrivetrain.setDefaultCommand(new PIDDrive(m_PIDdrivetrain, moveLimiter.calculate(m_controlBoard.xbox.getLeftStickY() * m_PIDdrivetrain.k_maxSpeed),
+      //  turnLimiter.calculate(m_controlBoard.xbox.getRightStickX() *m_PIDdrivetrain.k_maxTurn)));
+    m_PIDdrivetrain.setDefaultCommand(Commands.dummy(m_PIDdrivetrain, m_controlBoard.xbox.getLeftStickY()));
     configureButtonBindings();
 
     m_autoCommand = new RunCommand(() -> { });
@@ -53,7 +60,6 @@ public class RobotContainer {
     // m_controlBoard.xbox.xButton.whileHeld(Commands.motionMagic(m_drivetrain, 12));
     m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCells));
     m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCellsLimelight));
-    m_controlBoard.xbox.aButton.whenPressed(Commands.driveinches(m_PIDdrivetrain, 12));
     // m_controlBoard.xbox.xButton.whenPressed(new PIDDrive(m_PIDdrivetrain, 12));
   }
 
