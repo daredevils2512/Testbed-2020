@@ -41,6 +41,8 @@ public class PIDdrivetrain extends Drivetrain {
     leftPIDdrive = new PIDdrive(m_leftDriveMaster, m_leftEncoder, m_leftPIDcontroller);
     rightPIDdrive.setName("right PID drivetrain");
     leftPIDdrive.setName("left PID drivetrain");
+    rightPIDdrive.enable();
+    leftPIDdrive.enable();
   }
 
   private class PIDdrive extends PIDSubsystem {
@@ -90,8 +92,6 @@ public class PIDdrivetrain extends Drivetrain {
   }
 
   public void setSetPoint(double left, double right) {
-    rightPIDdrive.enable();
-    leftPIDdrive.enable();
     leftPIDdrive.setSetpoint(left);
     rightPIDdrive.setSetpoint(right);
   }
