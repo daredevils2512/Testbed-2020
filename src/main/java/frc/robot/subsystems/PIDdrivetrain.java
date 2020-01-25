@@ -27,8 +27,6 @@ public class PIDdrivetrain extends Drivetrain {
 
     m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD);
     m_rightPIDcontroller = new PIDController(k_rP, k_rI, k_rD);
-    m_leftPIDcontroller.setTolerance(0.1);
-    m_rightPIDcontroller.setTolerance(0.1);
 
     SmartDashboard.getEntry("left drivetrain P").setNumber(k_lP);
     SmartDashboard.getEntry("left drivetrain I").setNumber(k_lI);
