@@ -41,7 +41,7 @@ public class Drivetrain extends SubsystemBase {
   protected Encoder m_leftEncoder;
   protected Encoder m_rightEncoder;
 
-  private final DifferentialDrive m_differentialDrive;
+  protected final DifferentialDrive m_differentialDrive;
 
   // private final DoubleSolenoid m_shifter;
 

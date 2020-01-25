@@ -15,11 +15,11 @@ public class PIDdrivetrain extends Drivetrain {
   private PIDdrive rightPIDdrive;
   private PIDdrive leftPIDdrive;
 
-  private double k_lP = 0.0; //left PID
+  private double k_lP = 5.0; //left PID
   private double k_lI = 0.0; //TODO: tune these
   private double k_lD = 0.0;
 
-  private double k_rP = 0.0; //right PID
+  private double k_rP = 5.0; //right PID
   private double k_rI = 0.0;
   private double k_rD = 0.0;
 
@@ -94,5 +94,9 @@ public class PIDdrivetrain extends Drivetrain {
     leftPIDdrive.enable();
     leftPIDdrive.setSetpoint(left);
     rightPIDdrive.setSetpoint(right);
+  }
+
+  public void PIDarcade(double speed, double turn) {
+    setSetPoint(speed + turn, speed - turn);
   }
 }

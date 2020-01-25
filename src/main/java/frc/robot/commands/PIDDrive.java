@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.PIDdrivetrain;
 
 public class PIDDrive extends CommandBase {
@@ -9,18 +8,17 @@ public class PIDDrive extends CommandBase {
   private double m_leftCurrentPos;
   private double m_rightCurrentPos;
   private double m_forward;
+  private double m_turn;
 
-  public PIDDrive(PIDdrivetrain PIDdrivetrain, double forward) {
+  public PIDDrive(PIDdrivetrain PIDdrivetrain, double forward, double turn) {
     m_forward = forward;
+    m_turn = turn;
     m_PIDdrivetrain = PIDdrivetrain;
-
   }
 
   @Override
   public void execute() {
-    m_leftCurrentPos = m_PIDdrivetrain.getLeftEncoderDistance();
-    m_rightCurrentPos = m_PIDdrivetrain.getRightEncoderDistance();
-    m_PIDdrivetrain.setSetPoint(m_forward + m_leftCurrentPos, m_forward + m_rightCurrentPos);
+    
   }
 
   
