@@ -5,8 +5,6 @@ import frc.robot.subsystems.PIDdrivetrain;
 
 public class PIDDrive extends CommandBase {
   private final PIDdrivetrain m_PIDdrivetrain;
-  private double m_leftCurrentPos;
-  private double m_rightCurrentPos;
   private double m_forward;
   private double m_turn;
 
@@ -18,7 +16,7 @@ public class PIDDrive extends CommandBase {
 
   @Override
   public void execute() {
-    
+    m_PIDdrivetrain.PIDarcade(m_forward, m_turn);
   }
 
   

@@ -35,7 +35,7 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_PIDdrivetrain.setDefaultCommand(new RunCommand(() -> m_PIDdrivetrain.arcadeDrive(m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()), m_PIDdrivetrain));
+    m_PIDdrivetrain.setDefaultCommand(new PIDDrive(m_PIDdrivetrain, m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()));
 
     configureButtonBindings();
 
