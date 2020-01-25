@@ -19,8 +19,8 @@ public class PIDdrivetrain extends Drivetrain {
   private double k_lI = 0.0; //TODO: tune these
   private double k_lD = 0.0;
 
-  private double k_rP = 5.0; //right PID
-  private double k_rI = 0.0;
+  private double k_rP = -5.0; //right PID -- right P has to be negative i think
+  private double k_rI = 0.0; 
   private double k_rD = 0.0;
 
   public PIDdrivetrain() {
@@ -39,8 +39,6 @@ public class PIDdrivetrain extends Drivetrain {
 
     rightPIDdrive = new PIDdrive(m_rightDriveMaster, m_rightEncoder, m_rightPIDcontroller);
     leftPIDdrive = new PIDdrive(m_leftDriveMaster, m_leftEncoder, m_leftPIDcontroller);
-    rightPIDdrive.setName("right PID drivetrain");
-    leftPIDdrive.setName("left PID drivetrain");
     rightPIDdrive.enable();
     leftPIDdrive.enable();
   }
@@ -91,12 +89,31 @@ public class PIDdrivetrain extends Drivetrain {
     super.periodic(); 
   }
 
+  /**
+   * sets a setpoint in inches; make left and right different for turning
+   * @param left left drive
+   * @param right right drive
+   */
   public void setSetPoint(double left, double right) {
     leftPIDdrive.setSetpoint(left);
     rightPIDdrive.setSetpoint(right);
   }
+  
+  /**
+   * adds a setpoint to its current position to go the amount reletive to its current position
+   * @param left left distance
+   * @param right right distance
+   */
+  public void addSetPoint(double left, double right) {
+    setSetPoint(leftPIDdrive.getMeasurement() + left, rightPIDdrive.getMeasurement() + right);
+  }
 
+  /**
+   * arcade drive for PID drivetrain concept
+   * @param speed how far foreward it should go in the next period in inches
+   * @param turn how much turniness it should do in the next period in inches
+   */
   public void PIDarcade(double speed, double turn) {
-    setSetPoint(speed + turn, speed - turn);
+    addSetPoint(speed + turn, speed - turn);
   }
 }
