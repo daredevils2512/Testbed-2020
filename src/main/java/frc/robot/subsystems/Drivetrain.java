@@ -40,7 +40,7 @@ public class Drivetrain extends SubsystemBase {
   protected Encoder m_leftEncoder;
   protected Encoder m_rightEncoder;
 
-  protected final DifferentialDrive m_differentialDrive;
+  // protected final DifferentialDrive m_differentialDrive;
 
   // private final DoubleSolenoid m_shifter;
 
@@ -63,7 +63,7 @@ public class Drivetrain extends SubsystemBase {
     m_leftEncoder.setDistancePerPulse(0.0236065636);
     m_rightEncoder.setDistancePerPulse(0.0236065636);
 
-    m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
+    // m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
 
     // m_shifter = new DoubleSolenoid(m_shifterForwardChannel, m_shifterReverseChannel);
 
@@ -78,7 +78,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void arcadeDrive(double move, double turn) {
-    m_differentialDrive.arcadeDrive(move, turn);
+    // m_differentialDrive.arcadeDrive(move, turn);
   }
 
   // public boolean getLowGear() {

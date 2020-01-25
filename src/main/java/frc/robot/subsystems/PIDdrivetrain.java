@@ -12,9 +12,9 @@ public class PIDdrivetrain extends Drivetrain {
   protected PIDController m_leftPIDcontroller;
   protected PIDController m_rightPIDcontroller;
 
-  private PIDdrive rightPIDdrive;
   private PIDdrive leftPIDdrive;
-
+  private PIDdrive rightPIDdrive;
+  
   private double k_lP = 5.0; //left PID
   private double k_lI = 0.0; //TODO: tune these
   private double k_lD = 0.0;
@@ -24,11 +24,9 @@ public class PIDdrivetrain extends Drivetrain {
   private double k_rD = 0.0;
 
   public PIDdrivetrain() {
-
-    m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD);
-    m_rightPIDcontroller = new PIDController(k_rP, k_rI, k_rD);
-    m_leftPIDcontroller.setTolerance(0.1);
-    m_rightPIDcontroller.setTolerance(0.1);
+    
+    m_rightPIDcontroller = new PIDController(k_rP, k_rI, k_rD, 0.2);
+    m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD, 0.2);
 
     SmartDashboard.getEntry("left drivetrain P").setNumber(k_lP);
     SmartDashboard.getEntry("left drivetrain I").setNumber(k_lI);
@@ -41,6 +39,7 @@ public class PIDdrivetrain extends Drivetrain {
     leftPIDdrive = new PIDdrive(m_leftDriveMaster, m_leftEncoder, m_leftPIDcontroller);
     rightPIDdrive.enable();
     leftPIDdrive.enable();
+    
   }
 
   private class PIDdrive extends PIDSubsystem {
