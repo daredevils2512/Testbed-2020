@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.controlboard.ControlBoard;
+import frc.robot.controlboard.Xbox;
 import frc.robot.subsystems.PIDdrivetrain;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
@@ -41,10 +42,7 @@ public class RobotContainer {
     moveLimiter = new SlewRateLimiter(3);
     turnLimiter = new SlewRateLimiter(3);
     
-    // m_PIDdrivetrain.setDefaultCommand(new PIDDrive(m_PIDdrivetrain, moveLimiter.calculate(m_controlBoard.xbox.getLeftStickY() * m_PIDdrivetrain.k_maxSpeed),
-      //  turnLimiter.calculate(m_controlBoard.xbox.getRightStickX() *m_PIDdrivetrain.k_maxTurn)));
-    m_PIDdrivetrain.setDefaultCommand(Commands.dummy(m_PIDdrivetrain, m_controlBoard.xbox.getLeftStickY()));
-    configureButtonBindings();
+    m_PIDdrivetrain.setDefaultCommand(Commands.pidDrive(m_PIDdrivetrain, moveLimiter.calculate(m_controlBoard.xbox.getLeftStickY() *m_PIDdrivetrain.k_maxSpeed), turnLimiter.calculate(m_controlBoard.xbox.getRightStickX() * m_PIDdrivetrain.k_maxTurn)));
 
     m_autoCommand = new RunCommand(() -> { });
   }

@@ -75,6 +75,8 @@ public class PIDdrivetrain extends Drivetrain {
   }
 
   public void driveMotors(DifferentialDriveWheelSpeeds speeds) {
+    SmartDashboard.putNumber("left speed", speeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("right speed", speeds.rightMetersPerSecond);
     leftFeedForeward = m_feedforward.calculate(speeds.leftMetersPerSecond);
     rightFeedForeward = m_feedforward.calculate(speeds.rightMetersPerSecond);
     leftOutput = m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
@@ -84,6 +86,8 @@ public class PIDdrivetrain extends Drivetrain {
   }
 
   public void drive(double xSpeed, double rot) {
+    SmartDashboard.putNumber("move", xSpeed);
+    SmartDashboard.putNumber("turn", rot);
     wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
     driveMotors(wheelSpeeds);
   }

@@ -40,8 +40,6 @@ public class Drivetrain extends SubsystemBase {
   protected final WPI_TalonSRX m_rightDriveMaster;
   protected final WPI_TalonSRX m_rightDrive1;
 
-  protected final WPI_TalonFX m_falcon;
-
   protected Encoder m_leftEncoder;
   protected Encoder m_rightEncoder;
 
@@ -61,7 +59,6 @@ public class Drivetrain extends SubsystemBase {
     m_leftDrive1 = new WPI_TalonSRX(m_leftDrive1ID);
     m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
     m_rightDrive1 = new WPI_TalonSRX(m_rightDrive1ID);
-    m_falcon = new WPI_TalonFX(12);
 
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);
@@ -160,10 +157,6 @@ public class Drivetrain extends SubsystemBase {
 
   public boolean getHasResetGyro() {
     return m_pigeon.hasResetOccurred();
-  }
-
-  public void falcon(Double speed) {
-    m_falcon.set(speed);
   }
 
   // public boolean getLowGear() {
