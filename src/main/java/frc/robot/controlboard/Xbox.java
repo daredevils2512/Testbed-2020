@@ -50,6 +50,6 @@ public class Xbox {
     }
 
     public double getRightStickX() {
-        return m_controller.getX(Hand.kRight);
+        return -m_controller.getX(Hand.kRight);
     }
 }
