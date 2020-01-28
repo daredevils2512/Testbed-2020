@@ -38,9 +38,18 @@ public class PhotoEyeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    m_networkTable.getEntry("Photo eye").setBoolean(m_photoEye1.getDetected());
-    m_networkTable.getEntry("Photo eye").setBoolean(m_photoEye2.getDetected());
-    m_networkTable.getEntry("Photo eye").setBoolean(m_photoEye3.getDetected());
-    m_networkTable.getEntry("Photo eye").setBoolean(m_photoEye4.getDetected());
+    m_networkTable.getEntry("Photo eye").setBoolean(getBallInQueue()[0]);
+    m_networkTable.getEntry("Photo eye").setBoolean(getBallInQueue()[1]);
+    m_networkTable.getEntry("Photo eye").setBoolean(getBallInQueue()[2]);
+    m_networkTable.getEntry("Photo eye").setBoolean(getBallInQueue()[3]);
+  }
+
+  public boolean[] getBallInQueue() {
+    boolean[] getBall = {};
+    getBall[0] = !m_photoEye1.getDetected();
+    getBall[1] = !m_photoEye2.getDetected();
+    getBall[2] = !m_photoEye3.getDetected();
+    getBall[3] = !m_photoEye4.getDetected();
+    return getBall;
   }
 }
