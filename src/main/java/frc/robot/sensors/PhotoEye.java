@@ -5,12 +5,21 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.controlboard;
+package frc.robot.sensors;
 
-public class ControlBoard {
-    private final int xboxPort = 0;
-    private final int extremePort = 1;
+import edu.wpi.first.wpilibj.DigitalInput;
 
-    public final Xbox xbox = new Xbox(xboxPort);
-    public final Extreme extreme = new Extreme(extremePort);
+/**
+ * Wrapper class for photo switches
+ */
+public class PhotoEye {
+  private final DigitalInput m_digitalIn;
+
+  public PhotoEye(int port) {
+    m_digitalIn = new DigitalInput(port);
+  }
+
+  public boolean getDetected() {
+    return m_digitalIn.get();
+  }
 }

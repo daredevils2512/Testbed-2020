@@ -7,13 +7,10 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.controlboard.ControlBoard;
+import frc.robot.controlboard.Extreme;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -22,18 +19,15 @@ import frc.robot.controlboard.ControlBoard;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final ControlBoard m_controlBoard = new ControlBoard();
-  // private final Drivetrain m_drivetrain = new Drivetrain();
-  private final AnalogInput m_photoEye = new AnalogInput(0);
-
+  private final Extreme m_extreme = new Extreme(0);
+  private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  
   private final Command m_autoCommand;
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.arcadeDrive(m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()), m_drivetrain));
-
     configureButtonBindings();
 
     m_autoCommand = null;
@@ -46,9 +40,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // m_controlBoard.xbox.aButton.whenPressed(new InstantCommand(() -> m_drivetrain.setLowGear(true), m_drivetrain)).whenReleased(new InstantCommand(() -> m_drivetrain.setLowGear(false), m_drivetrain));
   }
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -56,11 +48,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
     return m_autoCommand;
-  }
-
-  public void periodic() {
-    NetworkTableInstance.getDefault().getTable("PhotoEye").getEntry("Voltage").setDouble(m_photoEye.getVoltage());
   }
 }
