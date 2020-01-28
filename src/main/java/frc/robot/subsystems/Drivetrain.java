@@ -25,7 +25,8 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX m_rightDriveMaster;
   private final WPI_TalonSRX m_rightDrive1;
 
-  private final DifferentialDrive m_differentialDrive;private final int m_encoderResolution = 4096; // Just a guess
+  private final DifferentialDrive m_differentialDrive;
+  private final int m_encoderResolution = 4096; // Just a guess
   private final double m_gearRatio = 4 / 1;
   private final double m_wheelCircumference = 4 * Math.PI;
 
