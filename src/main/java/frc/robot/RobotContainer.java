@@ -7,14 +7,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.commands.FollowBall;
-import frc.robot.controlboard.ControlBoard;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.vision.Limelight.Pipeline;
+import frc.robot.commands.Commands;
+import frc.robot.controlboard.Extreme;
+import frc.robot.subsystems.FalconTest;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -23,8 +21,10 @@ import frc.robot.vision.Limelight.Pipeline;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final ControlBoard m_controlBoard = new ControlBoard();
-  private final Drivetrain m_drivetrain = new Drivetrain();
+  private final Extreme m_extreme = new Extreme(0);
+
+  private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  private final FalconTest m_falconTest = new FalconTest();
   
   private final Command m_autoCommand;
 
@@ -32,7 +32,7 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.arcadeDrive(m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()), m_drivetrain));
+    m_falconTest.setDefaultCommand(Commands.runFalcon(m_falconTest, m_extreme::getStickY));
 
     configureButtonBindings();
 
@@ -46,10 +46,9 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCells));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCellsLimelight));
+    m_extreme.joystickTopLeft.whenPressed(Commands.setFalconPosition(m_falconTest, 1));
+    m_extreme.joystickTopRight.whenPressed(Commands.setFalconVelocity(m_falconTest, 10));
   }
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
