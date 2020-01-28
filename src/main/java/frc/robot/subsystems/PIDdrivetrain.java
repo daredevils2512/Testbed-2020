@@ -8,23 +8,24 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class PIDdrivetrain extends Drivetrain {
   protected PIDController m_leftPIDcontroller;
   protected PIDController m_rightPIDcontroller;
   
-  private double k_lP = 5.0; //left PID
+  private double k_lP = 1.0; //left PID
   private double k_lI = 0.0; //TODO: tune these
   private double k_lD = 0.0;
 
-  private double k_rP = -5.0; //right PID -- right P has to be negative i think
+  private double k_rP = -1.0; //right PID -- right P has to be negative i think
   private double k_rI = 0.0; 
   private double k_rD = 0.0;
 
   private final double m_trackWidth = 0.67;
   private final double k_staticGain = 1;
   private final double k_velocityGain = 2;
-  public final double k_maxSpeed = 15; //max speed in m/s
+  public final double k_maxSpeed = 3; //max speed in m/s
   public final double k_maxTurn = Math.PI; //max turn rate radians/s
 
   private double leftFeedForeward;
@@ -75,14 +76,20 @@ public class PIDdrivetrain extends Drivetrain {
   }
 
   public void driveMotors(DifferentialDriveWheelSpeeds speeds) {
-    SmartDashboard.putNumber("left speed", speeds.leftMetersPerSecond);
-    SmartDashboard.putNumber("right speed", speeds.rightMetersPerSecond);
+    // SmartDashboard.putNumber("left speed", speeds.leftMetersPerSecond);
+    // SmartDashboard.putNumber("right speed", speeds.rightMetersPerSecond);
     leftFeedForeward = m_feedforward.calculate(speeds.leftMetersPerSecond);
     rightFeedForeward = m_feedforward.calculate(speeds.rightMetersPerSecond);
     leftOutput = m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
     rightOutput = m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
-    m_leftDriveMaster.setVoltage(leftOutput + leftFeedForeward);
-    m_rightDriveMaster.setVoltage(rightOutput + rightFeedForeward);
+    double leftSpeed = leftOutput + leftFeedForeward;
+    double rightSpeed = rightOutput + rightFeedForeward;
+    SmartDashboard.putNumber("left speed", leftSpeed);
+    SmartDashboard.putNumber("right speed", rightSpeed);
+    leftSpeed = MathUtil.clamp(leftSpeed, -12.0, 12.0);
+    rightSpeed = MathUtil.clamp(rightSpeed, -12.0, 12.0);
+    m_leftDriveMaster.setVoltage(leftSpeed);
+    m_rightDriveMaster.setVoltage(rightSpeed);
   }
 
   public void drive(double xSpeed, double rot) {

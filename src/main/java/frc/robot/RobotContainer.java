@@ -41,8 +41,11 @@ public class RobotContainer {
   public RobotContainer() {
     moveLimiter = new SlewRateLimiter(3);
     turnLimiter = new SlewRateLimiter(3);
-    
-    m_PIDdrivetrain.setDefaultCommand(Commands.pidDrive(m_PIDdrivetrain, moveLimiter.calculate(m_controlBoard.xbox.getLeftStickY() *m_PIDdrivetrain.k_maxSpeed), turnLimiter.calculate(m_controlBoard.xbox.getRightStickX() * m_PIDdrivetrain.k_maxTurn)));
+
+    configureButtonBindings();
+    m_PIDdrivetrain.setDefaultCommand(Commands.pidDrive(m_PIDdrivetrain,
+        moveLimiter.calculate(m_controlBoard.xbox.getLeftStickY() * m_PIDdrivetrain.k_maxSpeed),
+        turnLimiter.calculate(m_controlBoard.xbox.getRightStickX() * m_PIDdrivetrain.k_maxTurn)));
 
     m_autoCommand = new RunCommand(() -> { });
   }
@@ -58,7 +61,7 @@ public class RobotContainer {
     // m_controlBoard.xbox.xButton.whileHeld(Commands.motionMagic(m_drivetrain, 12));
     m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCells));
     m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCellsLimelight));
-    // m_controlBoard.xbox.xButton.whenPressed(new PIDDrive(m_PIDdrivetrain, 12));
+    m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_PIDdrivetrain, 0.1, 0.0));
   }
 
   /**
