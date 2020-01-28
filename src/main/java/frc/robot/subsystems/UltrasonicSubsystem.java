@@ -10,18 +10,13 @@ package frc.robot.subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class UltrasonicSubsystem extends SubsystemBase {
   private final NetworkTable m_networkTable;
 
   private final int m_analogInChannel = 0;
-  private final int m_digitalOutChannel = 0;
   private final AnalogInput m_analogIn;
-  private final DigitalOutput m_digitalOut;
 
   /**
    * Creates a new ultrasonic subsystem
@@ -30,7 +25,6 @@ public class UltrasonicSubsystem extends SubsystemBase {
     m_networkTable = NetworkTableInstance.getDefault().getTable(getName());
 
     m_analogIn = new AnalogInput(m_analogInChannel);
-    m_digitalOut = new DigitalOutput(m_digitalOutChannel);
   }
 
   @Override
