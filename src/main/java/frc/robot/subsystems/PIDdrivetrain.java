@@ -1,13 +1,5 @@
 package frc.robot.subsystems;
 
-
-
-
-
-
-
-
-
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -48,7 +40,7 @@ public class PIDdrivetrain extends Drivetrain {
   private DifferentialDriveWheelSpeeds wheelSpeeds;
 
   public final double k_maxSpeed = 3; //max speed in m/s
-  public final double k_maxTurn = Math.PI; //max turn rate radians/s
+  public final double k_maxTurn = 2 * Math.PI; //max turn rate radians/s
 
   public PIDdrivetrain() {
     
@@ -117,5 +109,6 @@ public class PIDdrivetrain extends Drivetrain {
 
   public void updateOdometry() {
     m_odometry.update(Rotation2d.fromDegrees(getYaw()), getLeftEncoderDistance(), getRightEncoderDistance());
+    SmartDashboard.putString("pose", m_odometry.getPoseMeters().toString());
   }
 }

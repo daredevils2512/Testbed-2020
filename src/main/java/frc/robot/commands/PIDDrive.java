@@ -17,8 +17,8 @@ public class PIDDrive extends CommandBase {
   private final ControlBoard m_controlBoard;
 
   public PIDDrive(PIDdrivetrain PIDdrivetrain, ControlBoard controlBoard) {
-    moveLimiter = new SlewRateLimiter(5);
-    turnLimiter = new SlewRateLimiter(5);
+    moveLimiter = new SlewRateLimiter(10);
+    turnLimiter = new SlewRateLimiter(10);
     m_controlBoard = controlBoard;
     m_PIDdrivetrain = PIDdrivetrain;
     addRequirements(PIDdrivetrain);
@@ -26,7 +26,7 @@ public class PIDDrive extends CommandBase {
 
   @Override
   public void execute() {
-    m_forward = moveLimiter.calculate(m_controlBoard.xbox.getLeftStickY() * m_PIDdrivetrain.k_maxSpeed);
+    m_forward = -moveLimiter.calculate(m_controlBoard.xbox.getLeftStickY() * m_PIDdrivetrain.k_maxSpeed);
     m_turn = turnLimiter.calculate(m_controlBoard.xbox.getRightStickX() * m_PIDdrivetrain.k_maxTurn);
     m_PIDdrivetrain.drive(m_forward, m_turn);
   }
