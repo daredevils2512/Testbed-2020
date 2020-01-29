@@ -41,8 +41,11 @@ public class Drivetrain extends SubsystemBase {
   protected Encoder m_leftEncoder;
   protected Encoder m_rightEncoder;
 
+  protected double k_wheelRadius = 4 * 0.02554; //inches time the conversion to meters
+  protected double k_encoderResolution = 128; //provavly //also provabel not 4096
+
   private final int m_pigeonID = 0;
-  private final PigeonIMU m_pigeon; 
+  private final PigeonIMU m_pigeon;
   private double[] ypr = {0.0, 0.0, 0.0};
 
   // protected final DifferentialDrive m_differentialDrive;
@@ -65,8 +68,9 @@ public class Drivetrain extends SubsystemBase {
     m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
 
     m_rightEncoder.setReverseDirection(true);
-    m_leftEncoder.setDistancePerPulse(0.0236065636);
-    m_rightEncoder.setDistancePerPulse(0.0236065636);
+    //0.0236065636 for inches idk seems pretty accurate to me
+    m_leftEncoder.setDistancePerPulse(2 * Math.PI * k_wheelRadius / k_encoderResolution);
+    m_rightEncoder.setDistancePerPulse(2 * Math.PI * k_wheelRadius / k_encoderResolution);
 
     m_pigeon = new PigeonIMU(m_pigeonID);
     m_pigeon.configFactoryDefault();

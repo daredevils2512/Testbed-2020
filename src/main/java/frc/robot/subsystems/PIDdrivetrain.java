@@ -18,25 +18,29 @@ public class PIDdrivetrain extends Drivetrain {
   private double k_lI = 0.0; //TODO: tune these
   private double k_lD = 0.0;
 
-  private double k_rP = -1.0; //right PID -- right P has to be negative i think
+  private double k_rP = 1.0; //right PID -- right P has to be negative i think
   private double k_rI = 0.0; 
   private double k_rD = 0.0;
 
+  private double k_staticGain = 1;  //TODO: thses porbable need to be tuned as well
+  private double k_velocityGain = 2;
+
   private final double m_trackWidth = 0.67;
-  private final double k_staticGain = 1;
-  private final double k_velocityGain = 2;
-  public final double k_maxSpeed = 3; //max speed in m/s
-  public final double k_maxTurn = Math.PI; //max turn rate radians/s
 
   private double leftFeedForeward;
   private double rightFeedForeward;
   private double rightOutput;
   private double leftOutput;
+  private double leftSpeed;
+  private double rightSpeed;
 
   private DifferentialDriveKinematics m_kinematics;
   private DifferentialDriveOdometry m_odometry;
   private SimpleMotorFeedforward m_feedforward;
   private DifferentialDriveWheelSpeeds wheelSpeeds;
+
+  public final double k_maxSpeed = 3; //max speed in m/s
+  public final double k_maxTurn = Math.PI; //max turn rate radians/s
 
   public PIDdrivetrain() {
     
@@ -46,9 +50,11 @@ public class PIDdrivetrain extends Drivetrain {
     SmartDashboard.getEntry("left drivetrain P").setNumber(k_lP);
     SmartDashboard.getEntry("left drivetrain I").setNumber(k_lI);
     SmartDashboard.getEntry("left drivetrain D").setNumber(k_lD);
-    SmartDashboard.getEntry("right drivetrian P").setNumber(k_rP);
-    SmartDashboard.getEntry("right drivetrian I").setNumber(k_rI);
-    SmartDashboard.getEntry("right drivetrian D").setNumber(k_rD);
+    SmartDashboard.getEntry("right drivetrain P").setNumber(k_rP);
+    SmartDashboard.getEntry("right drivetrain I").setNumber(k_rI);
+    SmartDashboard.getEntry("right drivetrain D").setNumber(k_rD);
+    SmartDashboard.getEntry("static gain").setNumber(k_staticGain);
+    SmartDashboard.getEntry("velocity gain").setNumber(k_velocityGain);
 
     resetGyro();
     resetEncoders();
@@ -65,9 +71,13 @@ public class PIDdrivetrain extends Drivetrain {
     k_lP = SmartDashboard.getEntry("left drivetrain P").getDouble(0.0);
     k_lI = SmartDashboard.getEntry("left drivetrain I").getDouble(0.0);
     k_lD = SmartDashboard.getEntry("left drivetrain D").getDouble(0.0);
+    m_leftPIDcontroller.setPID(k_lP, k_lI, k_lD);
     k_rP = SmartDashboard.getEntry("right drivetrain P").getDouble(0.0);
     k_rI = SmartDashboard.getEntry("right drivetrain I").getDouble(0.0);
     k_rD = SmartDashboard.getEntry("right drivetrain D").getDouble(0.0);
+    m_rightPIDcontroller.setPID(k_rP, k_rI, k_rD);
+    k_staticGain = SmartDashboard.getEntry("static gain").getDouble(0.0);
+    k_velocityGain = SmartDashboard.getEntry("velocity gain").getDouble(0.0);
     updateOdometry();
     SmartDashboard.putNumber("left feed forewweard", leftFeedForeward);
     SmartDashboard.putNumber("right feed foreward", rightFeedForeward);
@@ -76,14 +86,14 @@ public class PIDdrivetrain extends Drivetrain {
   }
 
   public void driveMotors(DifferentialDriveWheelSpeeds speeds) {
-    // SmartDashboard.putNumber("left speed", speeds.leftMetersPerSecond);
-    // SmartDashboard.putNumber("right speed", speeds.rightMetersPerSecond);
+    SmartDashboard.putNumber("target left speed", speeds.leftMetersPerSecond);
+    SmartDashboard.putNumber("target right speed", speeds.rightMetersPerSecond);
     leftFeedForeward = m_feedforward.calculate(speeds.leftMetersPerSecond);
     rightFeedForeward = m_feedforward.calculate(speeds.rightMetersPerSecond);
-    leftOutput = m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
+    leftOutput = -m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
     rightOutput = m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
-    double leftSpeed = leftOutput + leftFeedForeward;
-    double rightSpeed = rightOutput + rightFeedForeward;
+    leftSpeed = leftOutput + leftFeedForeward;
+    rightSpeed = rightOutput + rightFeedForeward;
     SmartDashboard.putNumber("left speed", leftSpeed);
     SmartDashboard.putNumber("right speed", rightSpeed);
     leftSpeed = MathUtil.clamp(leftSpeed, -12.0, 12.0);
