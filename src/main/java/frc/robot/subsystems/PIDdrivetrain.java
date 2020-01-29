@@ -1,5 +1,13 @@
 package frc.robot.subsystems;
 
+
+
+
+
+
+
+
+
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -99,7 +107,7 @@ public class PIDdrivetrain extends Drivetrain {
     leftSpeed = MathUtil.clamp(leftSpeed, -12.0, 12.0);
     rightSpeed = MathUtil.clamp(rightSpeed, -12.0, 12.0);
     m_leftDriveMaster.setVoltage(leftSpeed);
-    m_rightDriveMaster.setVoltage(rightSpeed);
+    m_rightDriveMaster.setVoltage(-rightSpeed);
   }
 
   public void drive(double xSpeed, double rot) {

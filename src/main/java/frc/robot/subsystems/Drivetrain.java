@@ -86,8 +86,10 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("left ticks", getLeftEncoderTicks());
     SmartDashboard.putNumber("left inches", getLeftEncoderDistance());
+    SmartDashboard.putNumber("left encoder speed", getLeftEncoderRate());
     SmartDashboard.putNumber("right ticks", getRightEncoderTicks());
     SmartDashboard.putNumber("right inches", getRightEncoderDistance());
+    SmartDashboard.putNumber("right encoder speed", getRightEncoderRate());
     SmartDashboard.putNumber("yaw", getYaw());
     SmartDashboard.putNumber("pitch", getPitch());
     SmartDashboard.putNumber("roll", getRoll());
