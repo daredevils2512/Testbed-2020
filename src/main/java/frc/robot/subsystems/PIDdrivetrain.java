@@ -30,8 +30,8 @@ public class PIDdrivetrain extends Drivetrain {
   private double k_rI = 0.0; 
   private double k_rD = 0.0;
 
-  private double k_staticGain = 1;  //TODO: thses porbable need to be tuned as well
-  private double k_velocityGain = 2;
+  private final double k_staticGain = 1;  //TODO: thses porbable need to be tuned as well
+  private final double k_velocityGain = 2;
 
   private final double m_trackWidth = 0.67;
 
@@ -84,8 +84,6 @@ public class PIDdrivetrain extends Drivetrain {
     k_rI = SmartDashboard.getEntry("right drivetrain I").getDouble(0.0);
     k_rD = SmartDashboard.getEntry("right drivetrain D").getDouble(0.0);
     m_rightPIDcontroller.setPID(k_rP, k_rI, k_rD);
-    k_staticGain = SmartDashboard.getEntry("static gain").getDouble(0.0);
-    k_velocityGain = SmartDashboard.getEntry("velocity gain").getDouble(0.0);
     updateOdometry();
     SmartDashboard.putNumber("left feed forewweard", leftFeedForeward);
     SmartDashboard.putNumber("right feed foreward", rightFeedForeward);
@@ -99,15 +97,15 @@ public class PIDdrivetrain extends Drivetrain {
     leftFeedForeward = m_feedforward.calculate(speeds.leftMetersPerSecond);
     rightFeedForeward = m_feedforward.calculate(speeds.rightMetersPerSecond);
     leftOutput = -m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
-    rightOutput = m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
+    rightOutput = -m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
     leftSpeed = leftOutput + leftFeedForeward;
     rightSpeed = rightOutput + rightFeedForeward;
     SmartDashboard.putNumber("left speed", leftSpeed);
     SmartDashboard.putNumber("right speed", rightSpeed);
     leftSpeed = MathUtil.clamp(leftSpeed, -12.0, 12.0);
     rightSpeed = MathUtil.clamp(rightSpeed, -12.0, 12.0);
-    m_leftDriveMaster.setVoltage(leftSpeed);
-    m_rightDriveMaster.setVoltage(-rightSpeed);
+    m_leftDriveMaster.setVoltage(-leftSpeed);
+    m_rightDriveMaster.setVoltage(rightSpeed);
   }
 
   public void drive(double xSpeed, double rot) {
