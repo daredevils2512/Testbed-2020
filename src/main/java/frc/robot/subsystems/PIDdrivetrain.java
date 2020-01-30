@@ -118,8 +118,8 @@ public class PIDdrivetrain extends Drivetrain {
   public void driveMotors(DifferentialDriveWheelSpeeds speeds) {
     leftFeedForeward = m_feedforward.calculate(speeds.leftMetersPerSecond);
     rightFeedForeward = m_feedforward.calculate(speeds.rightMetersPerSecond);
-    leftOutput = -m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
-    rightOutput = -m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
+    leftOutput = m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
+    rightOutput = m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
     leftSpeed = leftOutput + leftFeedForeward;
     rightSpeed = rightOutput + rightFeedForeward;
     leftSpeed = MathUtil.clamp(leftSpeed, -12.0, 12.0);
