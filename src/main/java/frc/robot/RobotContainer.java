@@ -40,10 +40,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-<<<<<<< HEAD
-
-=======
->>>>>>> lightSensor
+    
   }
 
   /**
