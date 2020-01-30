@@ -8,17 +8,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.subsystems.PIDdrivetrain;
+import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
-
-// import frc.robot.commands.Commands;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import frc.robot.controlboard.Extreme;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -30,18 +28,22 @@ public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final PIDdrivetrain m_PIDdrivetrain = new PIDdrivetrain();
 
+  private final Extreme m_extreme = new Extreme(0);
+  private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  
+  private final Limelight m_limelight = new Limelight();
+  
   private final Command m_autoCommand;
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-
     m_PIDdrivetrain.setDefaultCommand(new PIDDrive(m_PIDdrivetrain, m_controlBoard));
 
-    m_autoCommand = new RunCommand(() -> { });
     configureButtonBindings();
 
+    m_autoCommand = null;
   }
 
   /**
@@ -53,8 +55,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // m_controlBoard.xbox.aButton.whenPressed(new InstantCommand(() -> m_drivetrain.setLowGear(true), m_drivetrain)).whenReleased(new InstantCommand(() -> m_drivetrain.setLowGear(false), m_drivetrain));
     // m_controlBoard.xbox.xButton.whileHeld(Commands.motionMagic(m_drivetrain, 12));
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCells));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_PIDdrivetrain, Pipeline.PowerCellsLimelight));
+    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_PIDdrivetrain, m_limelight, Pipeline.PowerCells));
+    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_PIDdrivetrain, m_limelight, Pipeline.PowerCellsLimelight));
     m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_PIDdrivetrain, 1.0, 0.0));
   }
 
@@ -64,7 +66,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
     return m_autoCommand;
   }
 }

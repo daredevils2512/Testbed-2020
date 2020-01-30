@@ -11,9 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.Encoder;
-// all shifters commented out as testbed has no shifters
-// import edu.wpi.first.wpilibj.DoubleSolenoid;
-// import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -28,15 +26,12 @@ public class Drivetrain extends SubsystemBase {
   private final int m_rightEncoderChannelA = 0;
   private final int m_rightEncoderChannelB = 1; 
 
-  // private final int m_shifterForwardChannel = 0;
-  // private final int m_shifterReverseChannel = 1;
-  // private final DoubleSolenoid.Value m_highGearValue = Value.kForward;
-  // private final DoubleSolenoid.Value m_lowGearValue = Value.kReverse;
-
   protected final WPI_TalonSRX m_leftDriveMaster;
   protected final WPI_TalonSRX m_leftDrive1;
   protected final WPI_TalonSRX m_rightDriveMaster;
   protected final WPI_TalonSRX m_rightDrive1;
+
+  protected final DifferentialDrive m_differentialDrive;
 
   protected Encoder m_leftEncoder;
   protected Encoder m_rightEncoder;
@@ -47,10 +42,6 @@ public class Drivetrain extends SubsystemBase {
   private final int m_pigeonID = 0;
   private final PigeonIMU m_pigeon;
   private double[] ypr = {0.0, 0.0, 0.0};
-
-  // protected final DifferentialDrive m_differentialDrive;
-
-  // private final DoubleSolenoid m_shifter;
 
   /**
    * Creates a new Drivetrain.
@@ -76,10 +67,7 @@ public class Drivetrain extends SubsystemBase {
     m_pigeon.configFactoryDefault();
     resetGyro();
 
-    // m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
-
-    // m_shifter = new DoubleSolenoid(m_shifterForwardChannel, m_shifterReverseChannel);
-
+    m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
   }
 
   @Override
@@ -96,16 +84,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void arcadeDrive(double move, double turn) {
-    // m_differentialDrive.arcadeDrive(move, turn);
+    m_differentialDrive.arcadeDrive(move, turn);
   }
-
-  // public boolean getLowGear() {
-  //   return m_shifter.get() == m_lowGearValue;
-  // }
-
-  // public void setLowGear(boolean wantsLowGear) {
-  //   m_shifter.set(wantsLowGear ? m_lowGearValue : m_highGearValue);
-  // }
 
   public int getLeftEncoderTicks() {
     return m_leftEncoder.get();
@@ -162,12 +142,4 @@ public class Drivetrain extends SubsystemBase {
   public boolean getHasResetGyro() {
     return m_pigeon.hasResetOccurred();
   }
-
-  // public boolean getLowGear() {
-  //   return m_shifter.get() == m_lowGearValue;
-  // }
-
-  // public void setLowGear(boolean wantsLowGear) {
-  //   m_shifter.set(wantsLowGear ? m_lowGearValue : m_highGearValue);
-  // }
 }
