@@ -23,10 +23,10 @@ public class Drivetrain extends SubsystemBase {
   private final int m_rightDriveMasterID = 4;
   private final int m_rightDrive1ID = 6;
 
-  private final int m_leftEncoderChannelA = 2; 
-  private final int m_leftEncoderChannelB = 3; 
-  private final int m_rightEncoderChannelA = 0;
-  private final int m_rightEncoderChannelB = 1; 
+  private final int m_leftEncoderChannelA = 0; 
+  private final int m_leftEncoderChannelB = 1; 
+  private final int m_rightEncoderChannelA = 2;
+  private final int m_rightEncoderChannelB = 3; 
 
   // private final int m_shifterForwardChannel = 0;
   // private final int m_shifterReverseChannel = 1;
@@ -41,7 +41,7 @@ public class Drivetrain extends SubsystemBase {
   protected Encoder m_leftEncoder;
   protected Encoder m_rightEncoder;
 
-  protected double k_wheelDiameter = 4 * 0.02554; //inches time the conversion to meters
+  protected double k_wheelDiameter = 4 * 0.0254; //inches time the conversion to meters
   protected double k_encoderResolution = 128; //provavly //also provabel not 4096
 
   private final int m_pigeonID = 0;
@@ -69,8 +69,10 @@ public class Drivetrain extends SubsystemBase {
 
     m_rightEncoder.setReverseDirection(true);
     //0.0236065636 for inches idk seems pretty accurate to me
-    m_leftEncoder.setDistancePerPulse(Math.PI * k_wheelDiameter / k_encoderResolution);
-    m_rightEncoder.setDistancePerPulse(Math.PI * k_wheelDiameter / k_encoderResolution);
+    // m_leftEncoder.setDistancePerPulse((Math.PI * k_wheelDiameter) / k_encoderResolution);
+    // m_rightEncoder.setDistancePerPulse((Math.PI * k_wheelDiameter) / k_encoderResolution);
+    m_leftEncoder.setDistancePerPulse(0.0006); //the magic number iin meters
+    m_rightEncoder.setDistancePerPulse(0.0006);
 
     m_pigeon = new PigeonIMU(m_pigeonID);
     m_pigeon.configFactoryDefault();

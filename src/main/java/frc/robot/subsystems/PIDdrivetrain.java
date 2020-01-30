@@ -88,14 +88,12 @@ public class PIDdrivetrain extends Drivetrain {
     SmartDashboard.putNumber("target right speed", speeds.rightMetersPerSecond);
     leftFeedForeward = m_feedforward.calculate(speeds.leftMetersPerSecond);
     rightFeedForeward = m_feedforward.calculate(speeds.rightMetersPerSecond);
-    leftOutput = -m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
-    rightOutput = -m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
+    leftOutput = m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
+    rightOutput = m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
     leftSpeed = leftOutput + leftFeedForeward;
     rightSpeed = rightOutput + rightFeedForeward;
     SmartDashboard.putNumber("left speed", leftSpeed);
     SmartDashboard.putNumber("right speed", rightSpeed);
-    leftSpeed = MathUtil.clamp(leftSpeed, -12.0, 12.0);
-    rightSpeed = MathUtil.clamp(rightSpeed, -12.0, 12.0);
     m_leftDriveMaster.setVoltage(-leftSpeed);
     m_rightDriveMaster.setVoltage(rightSpeed);
   }
