@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
-public class PIDdrivetrain extends Drivetrain {
+public class PIDDrivetrain extends Drivetrain {
   private final NetworkTable m_networkTable;
   private final NetworkTableEntry m_leftPGainEntry;
   private final NetworkTableEntry m_leftIGainEntry;
@@ -58,7 +58,7 @@ public class PIDdrivetrain extends Drivetrain {
   public final double k_maxSpeed = 3; //max speed in m/s
   public final double k_maxTurn = 2 * Math.PI; //max turn rate radians/s
 
-  public PIDdrivetrain() {
+  public PIDDrivetrain() {
     m_networkTable = NetworkTableInstance.getDefault().getTable(getName());
     m_leftPGainEntry = m_networkTable.getEntry("Left P gain");
     m_leftIGainEntry = m_networkTable.getEntry("Left I gain");

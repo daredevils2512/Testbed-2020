@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.FalconTest;
-import frc.robot.subsystems.PIDdrivetrain;
+import frc.robot.subsystems.PIDDrivetrain;
 
 public class Commands {
     private static class SetFalconPositionCommand extends CommandBase {
@@ -111,7 +111,7 @@ public class Commands {
       return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
     }
   
-    public static Command pidDrive(PIDdrivetrain drivetrian, Double move, Double turn) {
+    public static Command pidDrive(PIDDrivetrain drivetrian, Double move, Double turn) {
       return new RunCommand(() -> drivetrian.drive(move, turn), drivetrian);
     }
 }

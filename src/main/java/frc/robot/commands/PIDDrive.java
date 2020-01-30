@@ -4,17 +4,17 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.PIDdrivetrain;
+import frc.robot.subsystems.PIDDrivetrain;
 
 public class PIDDrive extends CommandBase {
-  private final PIDdrivetrain m_PIDdrivetrain;
+  private final PIDDrivetrain m_PIDdrivetrain;
   private final DoubleSupplier m_moveSupplier;
   private final DoubleSupplier m_turnSupplier;
 
   private final SlewRateLimiter moveLimiter;
   private final SlewRateLimiter turnLimiter;
 
-  public PIDDrive(PIDdrivetrain PIDdrivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
+  public PIDDrive(PIDDrivetrain PIDdrivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
     m_moveSupplier = moveSupplier;
     m_turnSupplier = turnSupplier;
     moveLimiter = new SlewRateLimiter(10);
