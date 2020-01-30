@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -7,10 +10,23 @@ import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class PIDdrivetrain extends Drivetrain {
+  private final NetworkTable m_networkTable;
+  private final NetworkTableEntry m_leftPGainEntry;
+  private final NetworkTableEntry m_leftIGainEntry;
+  private final NetworkTableEntry m_leftDGainEntry;
+  private final NetworkTableEntry m_rightPGainEntry;
+  private final NetworkTableEntry m_rightIGainEntry;
+  private final NetworkTableEntry m_rightDGainEntry;
+
+  private final NetworkTableEntry m_leftFeedForwardEntry;
+  private final NetworkTableEntry m_rightFeedForwardEntry;
+
+  private final NetworkTableEntry m_leftOutputEntry;
+  private final NetworkTableEntry m_rightOutputEntry;
+
   protected PIDController m_leftPIDcontroller;
   protected PIDController m_rightPIDcontroller;
   
@@ -43,18 +59,22 @@ public class PIDdrivetrain extends Drivetrain {
   public final double k_maxTurn = 2 * Math.PI; //max turn rate radians/s
 
   public PIDdrivetrain() {
+    m_networkTable = NetworkTableInstance.getDefault().getTable(getName());
+    m_leftPGainEntry = m_networkTable.getEntry("Left P gain");
+    m_leftIGainEntry = m_networkTable.getEntry("Left I gain");
+    m_leftDGainEntry = m_networkTable.getEntry("Left D gain");
+    m_rightPGainEntry = m_networkTable.getEntry("Right P gain");
+    m_rightIGainEntry = m_networkTable.getEntry("Right I gain");
+    m_rightDGainEntry = m_networkTable.getEntry("Right D gain");
+
+    m_leftFeedForwardEntry = m_networkTable.getEntry("Left feed forward");
+    m_rightFeedForwardEntry = m_networkTable.getEntry("Right feed forward");
     
+    m_leftOutputEntry = m_networkTable.getEntry("Left output");
+    m_rightOutputEntry = m_networkTable.getEntry("Right output");
+
     m_rightPIDcontroller = new PIDController(k_rP, k_rI, k_rD, 0.2);
     m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD, 0.2);
-
-    SmartDashboard.getEntry("left drivetrain P").setNumber(k_lP);
-    SmartDashboard.getEntry("left drivetrain I").setNumber(k_lI);
-    SmartDashboard.getEntry("left drivetrain D").setNumber(k_lD);
-    SmartDashboard.getEntry("right drivetrain P").setNumber(k_rP);
-    SmartDashboard.getEntry("right drivetrain I").setNumber(k_rI);
-    SmartDashboard.getEntry("right drivetrain D").setNumber(k_rD);
-    SmartDashboard.getEntry("static gain").setNumber(k_staticGain);
-    SmartDashboard.getEntry("velocity gain").setNumber(k_velocityGain);
 
     resetGyro();
     resetEncoders();
@@ -68,47 +88,53 @@ public class PIDdrivetrain extends Drivetrain {
   @Override
   public void periodic() {
     super.periodic(); 
-    k_lP = SmartDashboard.getEntry("left drivetrain P").getDouble(0.0);
-    k_lI = SmartDashboard.getEntry("left drivetrain I").getDouble(0.0);
-    k_lD = SmartDashboard.getEntry("left drivetrain D").getDouble(0.0);
+
+    k_lP = m_leftPGainEntry.getDouble(k_lP);
+    k_lI = m_leftIGainEntry.getDouble(k_lI);
+    k_lD = m_leftDGainEntry.getDouble(k_lD);
+
+    k_rP = m_rightPGainEntry.getDouble(k_rP);
+    k_rI = m_rightIGainEntry.getDouble(k_rI);
+    k_rD = m_rightDGainEntry.getDouble(k_rD);
+
     m_leftPIDcontroller.setPID(k_lP, k_lI, k_lD);
-    k_rP = SmartDashboard.getEntry("right drivetrain P").getDouble(0.0);
-    k_rI = SmartDashboard.getEntry("right drivetrain I").getDouble(0.0);
-    k_rD = SmartDashboard.getEntry("right drivetrain D").getDouble(0.0);
     m_rightPIDcontroller.setPID(k_rP, k_rI, k_rD);
     updateOdometry();
-    SmartDashboard.putNumber("left feed forewweard", leftFeedForeward);
-    SmartDashboard.putNumber("right feed foreward", rightFeedForeward);
-    SmartDashboard.putNumber("left output", leftOutput);
-    SmartDashboard.putNumber("right output", rightOutput);
+
+    m_leftPGainEntry.setNumber(k_lP);
+    m_leftIGainEntry.setNumber(k_lI);
+    m_leftDGainEntry.setNumber(k_lD);
+    m_rightPGainEntry.setNumber(k_rP);
+    m_rightIGainEntry.setNumber(k_rI);
+    m_rightDGainEntry.setNumber(k_rD);
+
+    m_leftFeedForwardEntry.setNumber(leftFeedForeward);
+    m_rightFeedForwardEntry.setNumber(rightFeedForeward);
+
+    m_leftOutputEntry.setNumber(leftOutput);
+    m_rightOutputEntry.setNumber(rightOutput);
   }
 
   public void driveMotors(DifferentialDriveWheelSpeeds speeds) {
-    SmartDashboard.putNumber("target left speed", speeds.leftMetersPerSecond);
-    SmartDashboard.putNumber("target right speed", speeds.rightMetersPerSecond);
     leftFeedForeward = m_feedforward.calculate(speeds.leftMetersPerSecond);
     rightFeedForeward = m_feedforward.calculate(speeds.rightMetersPerSecond);
     leftOutput = -m_leftPIDcontroller.calculate(getLeftEncoderRate(), speeds.leftMetersPerSecond);
     rightOutput = -m_rightPIDcontroller.calculate(getRightEncoderRate(), speeds.rightMetersPerSecond);
     leftSpeed = leftOutput + leftFeedForeward;
     rightSpeed = rightOutput + rightFeedForeward;
-    SmartDashboard.putNumber("left speed", leftSpeed);
-    SmartDashboard.putNumber("right speed", rightSpeed);
     leftSpeed = MathUtil.clamp(leftSpeed, -12.0, 12.0);
     rightSpeed = MathUtil.clamp(rightSpeed, -12.0, 12.0);
+
     m_leftDriveMaster.setVoltage(-leftSpeed);
     m_rightDriveMaster.setVoltage(rightSpeed);
   }
 
   public void drive(double xSpeed, double rot) {
-    SmartDashboard.putNumber("move", xSpeed);
-    SmartDashboard.putNumber("turn", rot);
     wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
     driveMotors(wheelSpeeds);
   }
 
   public void updateOdometry() {
     m_odometry.update(Rotation2d.fromDegrees(getYaw()), getLeftEncoderDistance(), getRightEncoderDistance());
-    SmartDashboard.putString("pose", m_odometry.getPoseMeters().toString());
   }
 }

@@ -59,7 +59,8 @@ public class Drivetrain extends SubsystemBase {
     m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
 
     m_rightEncoder.setReverseDirection(true);
-    //0.0236065636 for inches idk seems pretty accurate to me
+
+    // Distance in meters
     m_leftEncoder.setDistancePerPulse(Math.PI * k_wheelDiameter / k_encoderResolution);
     m_rightEncoder.setDistancePerPulse(Math.PI * k_wheelDiameter / k_encoderResolution);
 
