@@ -16,7 +16,6 @@ import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import frc.robot.controlboard.Extreme;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -28,7 +27,6 @@ public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final PIDdrivetrain m_PIDdrivetrain = new PIDdrivetrain();
 
-  private final Extreme m_extreme = new Extreme(0);
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
   
   private final Limelight m_limelight = new Limelight();
@@ -39,7 +37,7 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_PIDdrivetrain.setDefaultCommand(new PIDDrive(m_PIDdrivetrain, m_controlBoard));
+    m_PIDdrivetrain.setDefaultCommand(new PIDDrive(m_PIDdrivetrain, m_controlBoard.xbox::getLeftStickY, m_controlBoard.xbox::getRightStickX));
 
     configureButtonBindings();
 
@@ -53,8 +51,6 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // m_controlBoard.xbox.aButton.whenPressed(new InstantCommand(() -> m_drivetrain.setLowGear(true), m_drivetrain)).whenReleased(new InstantCommand(() -> m_drivetrain.setLowGear(false), m_drivetrain));
-    // m_controlBoard.xbox.xButton.whileHeld(Commands.motionMagic(m_drivetrain, 12));
     m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_PIDdrivetrain, m_limelight, Pipeline.PowerCells));
     m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_PIDdrivetrain, m_limelight, Pipeline.PowerCellsLimelight));
     m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_PIDdrivetrain, 1.0, 0.0));
