@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  */
 public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
-  private final PIDDrivetrain m_PIDdrivetrain = new PIDDrivetrain();
+  private final PIDDrivetrain m_pidDrivetrain = new PIDDrivetrain();
 
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
   
@@ -37,7 +37,7 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_PIDdrivetrain.setDefaultCommand(new PIDDrive(m_PIDdrivetrain, m_controlBoard.xbox::getLeftStickY, m_controlBoard.xbox::getRightStickX));
+    m_pidDrivetrain.setDefaultCommand(new PIDDrive(m_pidDrivetrain, m_controlBoard.xbox::getLeftStickY, m_controlBoard.xbox::getRightStickX));
 
     configureButtonBindings();
 
@@ -51,9 +51,12 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_PIDdrivetrain, m_limelight, Pipeline.PowerCells));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_PIDdrivetrain, m_limelight, Pipeline.PowerCellsLimelight));
-    m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_PIDdrivetrain, 1.0, 0.0));
+    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_limelight, Pipeline.PowerCells));
+    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_limelight, Pipeline.PowerCellsLimelight));
+    m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_pidDrivetrain, 1.0, 0.0));
+
+    // Turn to 0 degrees
+    m_controlBoard.xbox.xButton.whenPressed(Commands.turnToAngle(m_pidDrivetrain, 0));
   }
 
   /**

@@ -111,7 +111,11 @@ public class Commands {
       return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
     }
   
-    public static Command pidDrive(PIDDrivetrain drivetrian, Double move, Double turn) {
+    public static Command pidDrive(PIDDrivetrain drivetrian, double move, double turn) {
       return new RunCommand(() -> drivetrian.drive(move, turn), drivetrian);
+    }
+
+    public static Command turnToAngle(PIDDrivetrain drivetrain, double targetAngle) {
+      return new TurnToAngle(drivetrain, targetAngle);
     }
 }

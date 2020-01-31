@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Drivetrain extends SubsystemBase {
   private final int m_leftDriveMasterID = 1;
   private final int m_leftDrive1ID = 2;
-  private final int m_rightDriveMasterID = 4;
-  private final int m_rightDrive1ID = 6;
+  private final int m_rightDriveMasterID = 3;
+  private final int m_rightDrive1ID = 4;
 
   private final int m_leftEncoderChannelA = 0; 
   private final int m_leftEncoderChannelB = 1; 
@@ -39,7 +39,7 @@ public class Drivetrain extends SubsystemBase {
   protected double k_wheelDiameter = 4 * 0.0254; //inches time the conversion to meters
   protected double k_encoderResolution = 128; //provavly //also provabel not 4096
 
-  private final int m_pigeonID = 0;
+  private final int m_pigeonID = 5;
   private final PigeonIMU m_pigeon;
   private double[] ypr = {0.0, 0.0, 0.0};
 
