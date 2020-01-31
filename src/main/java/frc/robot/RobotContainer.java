@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
 
@@ -26,6 +27,9 @@ import frc.robot.commands.*;
 public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final Drivetrain m_drivetrain = new Drivetrain();
+  public static Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCells);
+  public static Limelight m_hexagonThingLimelight = new Limelight(Pipeline.HexagonThing3d);
+
 
   private final Command m_autoCommand;
 
@@ -48,8 +52,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // m_controlBoard.xbox.aButton.whenPressed(new InstantCommand(() -> m_drivetrain.setLowGear(true), m_drivetrain)).whenReleased(new InstantCommand(() -> m_drivetrain.setLowGear(false), m_drivetrain));
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCells));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCellsLimelight));
+    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCells, m_powerCellLimelight));
+    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCellsLimelight, m_powerCellLimelight));
   }
 
 
