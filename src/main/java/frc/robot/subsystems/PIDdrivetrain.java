@@ -41,7 +41,7 @@ public class PIDDrivetrain extends Drivetrain {
   private final double k_staticGain = 1;  //TODO: thses porbable need to be tuned as well
   private final double k_velocityGain = 2;
 
-  private final double m_trackWidth = 0.67;
+  private final double m_trackWidth = 0.67; // Track width in meters
 
   private double leftFeedForeward;
   private double rightFeedForeward;
@@ -75,9 +75,6 @@ public class PIDDrivetrain extends Drivetrain {
 
     m_rightPIDcontroller = new PIDController(k_rP, k_rI, k_rD, 0.2);
     m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD, 0.2);
-
-    resetGyro();
-    resetEncoders();
 
     m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getYaw()));

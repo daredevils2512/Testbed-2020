@@ -33,15 +33,16 @@ public class Drivetrain extends SubsystemBase {
 
   protected final DifferentialDrive m_differentialDrive;
 
-  protected Encoder m_leftEncoder;
-  protected Encoder m_rightEncoder;
+  protected final Encoder m_leftEncoder;
+  protected final Encoder m_rightEncoder;
 
   protected double k_wheelDiameter = 4 * 0.0254; //inches time the conversion to meters
   protected double k_encoderResolution = 128; //provavly //also provabel not 4096
 
   private final int m_pigeonID = 5;
-  private final PigeonIMU m_pigeon;
-  private double[] ypr = {0.0, 0.0, 0.0};
+  protected final PigeonIMU m_pigeon;
+
+  private double[] m_gyroData = new double[3]; // Yaw pitch roll in degrees
 
   /**
    * Creates a new Drivetrain.
@@ -67,9 +68,11 @@ public class Drivetrain extends SubsystemBase {
 
     m_pigeon = new PigeonIMU(m_pigeonID);
     m_pigeon.configFactoryDefault();
-    resetGyro();
 
     m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
+
+    resetEncoders();
+    setHeading(0);
   }
 
   @Override
@@ -118,30 +121,30 @@ public class Drivetrain extends SubsystemBase {
     m_rightEncoder.reset();
   }
 
-  public double[] getYPR() {
-    this.m_pigeon.getYawPitchRoll(ypr);
-    return ypr;
+  /**
+   * Must be called periodically to retrieve gyro data from the pigeon
+   */
+  public void updateGyroData() {
+    m_pigeon.getYawPitchRoll(m_gyroData);
   }
 
   public double getYaw() {
-    return getYPR()[0];
+    return m_gyroData[0];
   }
 
   public double getPitch() {
-    return getYPR()[1];
+    return m_gyroData[1];
   }
 
   public double getRoll() {
-    return getYPR()[2];
+    return m_gyroData[2];
   }
 
-  public void resetGyro() {
-    m_pigeon.setYaw(0.0);
-    m_pigeon.setFusedHeading(0.0);
-    m_pigeon.setAccumZAngle(0.0);
-  }
-
-  public boolean getHasResetGyro() {
-    return m_pigeon.hasResetOccurred();
+  /**
+   * Set a new robot heading
+   * @param angle
+   */
+  public void setHeading(double angle) {
+    m_pigeon.setFusedHeading(angle);
   }
 }

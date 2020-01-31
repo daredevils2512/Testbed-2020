@@ -27,6 +27,7 @@ public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final PIDDrivetrain m_pidDrivetrain = new PIDDrivetrain();
 
+  @SuppressWarnings("unused")
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
   
   private final Limelight m_limelight = new Limelight();
