@@ -12,11 +12,14 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.PIDDrivetrain;
 
 public class TurnToAngle extends PIDCommand {
-  private final double m_turnTolerance = 5; // Degrees
-  private final double m_turnSpeedTolerance = 1; // Degrees per second
+  private static final double m_kP = 0.5;
+  private static final double m_kI = 0;
+  private static final double m_kD = 0;
+  private static final double m_turnTolerance = 5; // Degrees
+  private static final double m_turnSpeedTolerance = 1; // Degrees per second
 
   public TurnToAngle(PIDDrivetrain drivetrain, double targetAngle) {
-    super(new PIDController(0.5, 0, 0), drivetrain::getYaw, targetAngle, output -> {
+    super(new PIDController(m_kP, m_kI, m_kD), drivetrain::getYaw, targetAngle, output -> {
       drivetrain.drive(0, output * drivetrain.k_maxTurn);
     }, drivetrain);
 
