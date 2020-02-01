@@ -28,7 +28,6 @@ public class FollowBall extends CommandBase {
   private double turn;
 
   public FollowBall(Drivetrain drivetrain, Limelight limelight, Pipeline pipeline) {
-    // Use addRequirements() here to declare subsystem dependencies.
     m_limelight = limelight;
     m_pipeline = pipeline;
     m_drivetrain = drivetrain;
