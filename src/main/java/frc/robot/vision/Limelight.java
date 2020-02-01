@@ -9,33 +9,66 @@ package frc.robot.vision;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.Constants;
 
 /**
  * Limelight manager for power cell target tracking
  */
 public class Limelight {
   public enum Pipeline {
-    PowerCellTopTarget(2),
-    PowerCellsLimelight(1),
-    PowerCells(0);
+    //table is the table name without the limelight- infromt of it. this also means which physical limelight it is
+    PowerCellsLimelight(1, "balls"),
+    PowerCells(0, "balls"),
+    HexagonThing3d(2, "balls", 21, 7.34, 0); //inches. pipeline id is for testing on the old limelight
 
     private int m_id;
+    private String m_table;
+    private double m_angle;
+    private double m_verticalOffset;
+    private double m_horizontalOffset;
 
-    private Pipeline(int id) {
+    private Pipeline(int id, String table) {
       m_id = id;
+      m_table = table;
+    }
+
+    private Pipeline(int id, String table, double angle, double verticalOffset, double horizontalOffset) {
+      m_id = id;
+      m_table = "limelight-" + table;
+      m_angle = angle;
+      m_verticalOffset = Constants.hexagonCenterHeight - verticalOffset;
+      m_horizontalOffset = horizontalOffset;
+    }
+
+    public String getTable() {
+      return m_table;
     }
 
     public int getID() {
       return m_id;
+    }
+
+    public double getAngle() {
+      return m_angle;
+    }
+
+    public double getVericalOffset() {
+      return m_verticalOffset;
+    }
+
+    public double getHorizontalOffset() {
+      return m_horizontalOffset;
     }
   }
 
   private NetworkTable m_table;
 
   private double lastPostion;
+  private Pipeline m_defaultPipeline;
 
-  public Limelight() {
-    m_table = NetworkTableInstance.getDefault().getTable("limelight");
+  public Limelight(Pipeline defaultPipeline) {
+    m_defaultPipeline = defaultPipeline;
+    m_table = NetworkTableInstance.getDefault().getTable(m_defaultPipeline.getTable());
     this.lastPostion = 1.0;
   }
 
@@ -43,6 +76,10 @@ public class Limelight {
 
   public void setPipeline(Pipeline pipeline) {
     m_table.getEntry("pipeline").setNumber(pipeline.getID());
+  }
+
+  public Pipeline getDefualtPipeline() {
+    return m_defaultPipeline;
   }
 
   public boolean hasTarget() {
@@ -74,5 +111,14 @@ public class Limelight {
       lastPostion = tx(); 
     }
     return lastPostion;
+  }
+
+  /**
+   * sets the pipeline to the default pipeline
+   * @return distance in units of something to the tagret
+   */
+  public double getDistanceToTarget() {
+    setPipeline(m_defaultPipeline);
+    return (m_defaultPipeline.getVericalOffset() / Math.tan(Math.toRadians(m_defaultPipeline.getAngle() + ty()))) - m_defaultPipeline.getHorizontalOffset();
   }
 }

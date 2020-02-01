@@ -30,7 +30,7 @@ public class RobotContainer {
   @SuppressWarnings("unused")
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
   
-  private final Limelight m_limelight = new Limelight();
+  private final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
   
   private final Command m_autoCommand;
 
@@ -52,8 +52,8 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_limelight, Pipeline.PowerCells));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_limelight, Pipeline.PowerCellsLimelight));
+    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_powerCellLimelight, Pipeline.PowerCells));
+    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_powerCellLimelight, Pipeline.PowerCellsLimelight));
     m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_pidDrivetrain, 1.0, 0.0));
 
     // Turn to 0 degrees
