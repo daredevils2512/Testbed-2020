@@ -10,7 +10,6 @@ package frc.robot.vision;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.Constants;
-import frc.robot.utils.Conversions;
 
 /**
  * Limelight manager for power cell target tracking

@@ -8,13 +8,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.utils.Conversions;
-import frc.robot.vision.Limelight;
-import frc.robot.vision.Limelight.Pipeline;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -51,12 +46,10 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    SmartDashboard.putNumber("last ball position", RobotContainer.m_powerCellLimelight.getLastPosition());
-    SmartDashboard.putNumber("distance", Conversions.inchesToMeters(RobotContainer.m_hexagonThingLimelight.getDistanceToTarget()));
     CommandScheduler.getInstance().run();
   }
 
-  /**
+  /*
    * This function is called once each time the robot enters Disabled mode.
    */
   @Override

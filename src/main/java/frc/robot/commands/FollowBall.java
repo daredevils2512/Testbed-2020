@@ -9,15 +9,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 
 public class FollowBall extends CommandBase {
-  private Drivetrain m_drivetrain;
-  private Pipeline m_pipeline;
-  private Limelight m_limelight;
+  private final Drivetrain m_drivetrain;
+  private final Limelight m_limelight;
+  private final Pipeline m_pipeline;
 
   //constants to change the moving
   private final double k_move = 0.2;
@@ -28,11 +27,10 @@ public class FollowBall extends CommandBase {
   private double move;
   private double turn;
 
-  public FollowBall(Drivetrain drivetrain, Pipeline pipeline, Limelight limelight) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public FollowBall(Drivetrain drivetrain, Limelight limelight, Pipeline pipeline) {
+    m_limelight = limelight;
     m_pipeline = pipeline;
     m_drivetrain = drivetrain;
-    m_limelight = limelight;
     addRequirements(m_drivetrain);
   }
 

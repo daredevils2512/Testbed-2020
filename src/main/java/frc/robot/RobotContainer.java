@@ -10,13 +10,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.controlboard.ControlBoard;
-import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.PIDDrivetrain;
 import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -26,22 +25,24 @@ import frc.robot.commands.*;
  */
 public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
-  private final Drivetrain m_drivetrain = new Drivetrain();
-  public static Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCells);
-  public static Limelight m_hexagonThingLimelight = new Limelight(Pipeline.HexagonThing3d);
+  private final PIDDrivetrain m_pidDrivetrain = new PIDDrivetrain();
 
-
+  @SuppressWarnings("unused")
+  private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  
+  private final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
+  
   private final Command m_autoCommand;
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.arcadeDrive(m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()), m_drivetrain));
+    m_pidDrivetrain.setDefaultCommand(new PIDDrive(m_pidDrivetrain, m_controlBoard.xbox::getLeftStickY, m_controlBoard.xbox::getRightStickX));
 
     configureButtonBindings();
 
-    m_autoCommand = new RunCommand(() -> { });
+    m_autoCommand = null;
   }
 
   /**
@@ -51,11 +52,13 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // m_controlBoard.xbox.aButton.whenPressed(new InstantCommand(() -> m_drivetrain.setLowGear(true), m_drivetrain)).whenReleased(new InstantCommand(() -> m_drivetrain.setLowGear(false), m_drivetrain));
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCells, m_powerCellLimelight));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_drivetrain, Pipeline.PowerCellsLimelight, m_powerCellLimelight));
-  }
+    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_powerCellLimelight, Pipeline.PowerCells));
+    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_powerCellLimelight, Pipeline.PowerCellsLimelight));
+    m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_pidDrivetrain, 1.0, 0.0));
 
+    // Turn to 0 degrees
+    m_controlBoard.xbox.xButton.whenPressed(Commands.turnToAngle(m_pidDrivetrain, 0));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -63,7 +66,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
     return m_autoCommand;
   }
 }

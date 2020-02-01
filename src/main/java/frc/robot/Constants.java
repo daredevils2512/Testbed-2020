@@ -18,5 +18,5 @@ import frc.robot.utils.Conversions;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double hexagonCenterHeight = Conversions.feetInchesToInches(8, 2.25);
+    public static final double hexagonCenterHeight = Conversions.feetAndInchesToInches(8, 2.25); // Height in inches
 }
