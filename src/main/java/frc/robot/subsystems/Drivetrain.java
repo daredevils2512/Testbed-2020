@@ -7,7 +7,8 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.Encoder;
 // all shifters commented out as testbed has no shifters
 // import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -36,10 +37,10 @@ public class Drivetrain extends SubsystemBase {
   // private final DoubleSolenoid.Value m_highGearValue = Value.kForward;
   // private final DoubleSolenoid.Value m_lowGearValue = Value.kReverse;
 
-  protected final WPI_TalonFX m_leftDriveMaster;
-  protected final WPI_TalonFX m_leftDrive1;
-  protected final WPI_TalonFX m_rightDriveMaster;
-  protected final WPI_TalonFX m_rightDrive1;
+  protected final WPI_TalonSRX m_leftDriveMaster;
+  protected final WPI_TalonSRX m_leftDrive1;
+  protected final WPI_TalonSRX m_rightDriveMaster;
+  protected final WPI_TalonSRX m_rightDrive1;
 
   protected Encoder m_leftEncoder;
   protected Encoder m_rightEncoder;
@@ -52,10 +53,10 @@ public class Drivetrain extends SubsystemBase {
    * Creates a new Drivetrain.
    */
   public Drivetrain() {
-    m_leftDriveMaster = new WPI_TalonFX(m_leftDriveMasterID);
-    m_leftDrive1 = new WPI_TalonFX(m_leftDrive1ID);
-    m_rightDriveMaster = new WPI_TalonFX(m_rightDriveMasterID);
-    m_rightDrive1 = new WPI_TalonFX(m_rightDrive1ID);
+    m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
+    m_leftDrive1 = new WPI_TalonSRX(m_leftDrive1ID);
+    m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
+    m_rightDrive1 = new WPI_TalonSRX(m_rightDrive1ID);
 
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);

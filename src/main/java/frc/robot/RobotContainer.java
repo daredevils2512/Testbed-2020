@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.PIDdrivetrain;
+import frc.robot.subsystems.Turret;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
 
@@ -29,6 +30,7 @@ public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final Drivetrain m_drivetrain = new Drivetrain();
   public final PIDdrivetrain m_PIDdrivetrian = new PIDdrivetrain();
+  private final Turret m_turret = new Turret();
 
   private final Command m_autoCommand;
 
@@ -38,6 +40,8 @@ public class RobotContainer {
   public RobotContainer() {
     m_drivetrain.init();
     m_drivetrain.setDefaultCommand(new RunCommand(() -> m_drivetrain.arcadeDrive(m_controlBoard.xbox.getLeftStickY(), m_controlBoard.xbox.getRightStickX()), m_drivetrain));
+    m_turret.setDefaultCommand(new RunCommand(() -> m_turret.setSpeed(
+      m_controlBoard.xbox.yButton.get() ? m_controlBoard.xbox.getRightStickX() : 0)));
 
     configureButtonBindings();
 
