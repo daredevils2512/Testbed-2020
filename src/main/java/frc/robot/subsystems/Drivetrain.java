@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -30,8 +29,6 @@ public class Drivetrain extends SubsystemBase {
   protected final WPI_TalonSRX m_leftDrive1;
   protected final WPI_TalonSRX m_rightDriveMaster;
   protected final WPI_TalonSRX m_rightDrive1;
-
-  protected final DifferentialDrive m_differentialDrive;
 
   protected final Encoder m_leftEncoder;
   protected final Encoder m_rightEncoder;
@@ -69,14 +66,14 @@ public class Drivetrain extends SubsystemBase {
     m_pigeon = new PigeonIMU(m_pigeonID);
     m_pigeon.configFactoryDefault();
 
-    m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
-
     resetEncoders();
     setHeading(0);
   }
 
   @Override
   public void periodic() {
+    updateGyroData();
+
     SmartDashboard.putNumber("left ticks", getLeftEncoderTicks());
     SmartDashboard.putNumber("left inches", getLeftEncoderDistance());
     SmartDashboard.putNumber("left encoder speed", getLeftEncoderRate());
@@ -89,7 +86,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void arcadeDrive(double move, double turn) {
-    m_differentialDrive.arcadeDrive(move, turn);
+    
   }
 
   public int getLeftEncoderTicks() {

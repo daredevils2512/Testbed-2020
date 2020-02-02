@@ -51,7 +51,7 @@ public class Xbox {
      * @return move
      */
     public double getLeftStickY() {
-        return m_controller.getY(Hand.kLeft);
+        return -m_controller.getY(Hand.kLeft);
     }
 
     /**
@@ -59,6 +59,6 @@ public class Xbox {
      * @return turn
      */
     public double getRightStickX() {
-        return -m_controller.getX(Hand.kRight);
+        return m_controller.getX(Hand.kRight);
     }
 }

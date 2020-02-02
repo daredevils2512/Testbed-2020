@@ -5,6 +5,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
@@ -26,6 +27,8 @@ public class PIDDrivetrain extends Drivetrain {
 
   private final NetworkTableEntry m_leftOutputEntry;
   private final NetworkTableEntry m_rightOutputEntry;
+
+  private final NetworkTableEntry m_yawEntry;
 
   protected PIDController m_leftPIDcontroller;
   protected PIDController m_rightPIDcontroller;
@@ -73,6 +76,8 @@ public class PIDDrivetrain extends Drivetrain {
     m_leftOutputEntry = m_networkTable.getEntry("Left output");
     m_rightOutputEntry = m_networkTable.getEntry("Right output");
 
+    m_yawEntry = m_networkTable.getEntry("Yaw");
+
     m_rightPIDcontroller = new PIDController(k_rP, k_rI, k_rD, 0.2);
     m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD, 0.2);
 
@@ -96,6 +101,7 @@ public class PIDDrivetrain extends Drivetrain {
 
     m_leftPIDcontroller.setPID(k_lP, k_lI, k_lD);
     m_rightPIDcontroller.setPID(k_rP, k_rI, k_rD);
+
     updateOdometry();
 
     m_leftPGainEntry.setNumber(k_lP);
@@ -110,6 +116,8 @@ public class PIDDrivetrain extends Drivetrain {
 
     m_leftOutputEntry.setNumber(leftOutput);
     m_rightOutputEntry.setNumber(rightOutput);
+
+    m_yawEntry.setNumber(getPose().getRotation().getDegrees());
   }
 
   public void driveMotors(DifferentialDriveWheelSpeeds speeds) {
@@ -126,6 +134,11 @@ public class PIDDrivetrain extends Drivetrain {
     m_rightDriveMaster.setVoltage(rightSpeed);
   }
 
+  /**
+   * Drive using velocity PID
+   * @param xSpeed Velocity in meters per second
+   * @param rot Angular velocity in radians per second
+   */
   public void drive(double xSpeed, double rot) {
     wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
     driveMotors(wheelSpeeds);
@@ -133,5 +146,9 @@ public class PIDDrivetrain extends Drivetrain {
 
   public void updateOdometry() {
     m_odometry.update(Rotation2d.fromDegrees(getYaw()), getLeftEncoderDistance(), getRightEncoderDistance());
+  }
+
+  public Pose2d getPose() {
+    return m_odometry.getPoseMeters();
   }
 }
