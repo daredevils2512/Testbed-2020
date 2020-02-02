@@ -7,27 +7,42 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
   private final int m_leftDriveMasterID = 1;
   private final int m_leftDrive1ID = 2;
-  private final int m_rightDriveMasterID = 4;
-  private final int m_rightDrive1ID = 6;
+  private final int m_rightDriveMasterID = 3;
+  private final int m_rightDrive1ID = 4;
 
-  private final WPI_TalonSRX m_leftDriveMaster;
-  private final WPI_TalonSRX m_leftDrive1;
-  private final WPI_TalonSRX m_rightDriveMaster;
-  private final WPI_TalonSRX m_rightDrive1;
+  private final int m_leftEncoderChannelA = 0; 
+  private final int m_leftEncoderChannelB = 1; 
+  private final int m_rightEncoderChannelA = 2;
+  private final int m_rightEncoderChannelB = 3; 
 
-  private final DifferentialDrive m_differentialDrive;
-  private final int m_encoderResolution = 4096; // Just a guess
-  private final double m_gearRatio = 4 / 1;
-  private final double m_wheelCircumference = 4 * Math.PI;
+  protected final WPI_TalonSRX m_leftDriveMaster;
+  protected final WPI_TalonSRX m_leftDrive1;
+  protected final WPI_TalonSRX m_rightDriveMaster;
+  protected final WPI_TalonSRX m_rightDrive1;
+
+  protected final DifferentialDrive m_differentialDrive;
+
+  protected final Encoder m_leftEncoder;
+  protected final Encoder m_rightEncoder;
+
+  protected double k_wheelDiameter = 4 * 0.0254; //inches time the conversion to meters
+  protected double k_encoderResolution = 128; //provavly //also provabel not 4096
+
+  private final int m_pigeonID = 5;
+  protected final PigeonIMU m_pigeon;
+
+  private double[] m_gyroData = new double[3]; // Yaw pitch roll in degrees
 
   /**
    * Creates a new Drivetrain.
@@ -41,44 +56,95 @@ public class Drivetrain extends SubsystemBase {
     m_leftDrive1.follow(m_leftDriveMaster);
     m_rightDrive1.follow(m_rightDriveMaster);
 
+    m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
+    m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
+
+    m_rightEncoder.setReverseDirection(true);
+    //0.0236065636 for inches idk seems pretty accurate to me
+    // m_leftEncoder.setDistancePerPulse((Math.PI * k_wheelDiameter) / k_encoderResolution);
+    // m_rightEncoder.setDistancePerPulse((Math.PI * k_wheelDiameter) / k_encoderResolution);
+    m_leftEncoder.setDistancePerPulse(0.0006); //the magic number iin meters
+    m_rightEncoder.setDistancePerPulse(0.0006);
+
+    m_pigeon = new PigeonIMU(m_pigeonID);
+    m_pigeon.configFactoryDefault();
+
     m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
+
+    resetEncoders();
+    setHeading(0);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("left Current", getCurrent()[0]);
-    // SmartDashboard.putNumber("right Current", getCurrent()[1]);
+    SmartDashboard.putNumber("left ticks", getLeftEncoderTicks());
+    SmartDashboard.putNumber("left inches", getLeftEncoderDistance());
+    SmartDashboard.putNumber("left encoder speed", getLeftEncoderRate());
+    SmartDashboard.putNumber("right ticks", getRightEncoderTicks());
+    SmartDashboard.putNumber("right inches", getRightEncoderDistance());
+    SmartDashboard.putNumber("right encoder speed", getRightEncoderRate());
+    SmartDashboard.putNumber("yaw", getYaw());
+    SmartDashboard.putNumber("pitch", getPitch());
+    SmartDashboard.putNumber("roll", getRoll());
   }
 
   public void arcadeDrive(double move, double turn) {
     m_differentialDrive.arcadeDrive(move, turn);
   }
-  
-  // /**
-  //  * @return left current[0] and right current[1]
-  //  */
-  // public double[] getCurrent() {
-  //   double[] outputCurrent = new double[2];
-  //   outputCurrent[0] = m_leftDrive1.getStatorCurrent();
-  //   outputCurrent[1] = m_rightDrive1.getStatorCurrent();
-  //   return outputCurrent;
-  // }
+
+  public int getLeftEncoderTicks() {
+    return m_leftEncoder.get();
+  }
+
+  public double getLeftEncoderDistance() {
+    return m_leftEncoder.getDistance();
+  }
+
+  public double getLeftEncoderRate() {
+    return m_leftEncoder.getRate();
+  }
+
+  public int getRightEncoderTicks() {
+    return m_rightEncoder.get();
+  }
+
+  public double getRightEncoderDistance() {
+    return m_rightEncoder.getDistance();
+  }
+
+  public double getRightEncoderRate() {
+    return m_rightEncoder.getRate();
+  }
+
+  public void resetEncoders() {
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
+  }
 
   /**
-   * drives forward using motion magic
-   * @param distance distance to go in inches
-  */
-  public void drive(final double distance) {
-    m_leftDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
-    m_rightDriveMaster.set(ControlMode.MotionMagic, inchesToEncoderTicks(distance));
+   * Must be called periodically to retrieve gyro data from the pigeon
+   */
+  public void updateGyroData() {
+    m_pigeon.getYawPitchRoll(m_gyroData);
   }
 
-  public double encoderTicksToInches(int number) {
-    return (double)number / m_encoderResolution * m_gearRatio * m_wheelCircumference;
+  public double getYaw() {
+    return m_gyroData[0];
   }
 
-  public int inchesToEncoderTicks(double inches) {
-    return (int)(inches / m_wheelCircumference / m_gearRatio * m_encoderResolution);
+  public double getPitch() {
+    return m_gyroData[1];
+  }
+
+  public double getRoll() {
+    return m_gyroData[2];
+  }
+
+  /**
+   * Set a new robot heading
+   * @param angle
+   */
+  public void setHeading(double angle) {
+    m_pigeon.setFusedHeading(angle);
   }
 }

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.FalconTest;
+import frc.robot.subsystems.PIDDrivetrain;
 
 public class Commands {
     private static class SetFalconPositionCommand extends CommandBase {
@@ -76,10 +77,6 @@ public class Commands {
 
     }
 
-    public static Command arcadeDrive(Drivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
-        return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
-    }
-
     public static Command runFalcon(FalconTest falconTest, DoubleSupplier speedSupplier) {
         return new RunCommand(() -> falconTest.run(speedSupplier.getAsDouble()), falconTest);
     }
@@ -108,5 +105,17 @@ public class Commands {
      */
     public static Command setFalconVelocity(FalconTest falconTest, double velocity) {
         return new SetFalconVelocityCommand(falconTest, velocity);
+    }
+
+    public static Command arcadeDrive(Drivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
+      return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
+    }
+  
+    public static Command pidDrive(PIDDrivetrain drivetrian, double move, double turn) {
+      return new RunCommand(() -> drivetrian.drive(move, turn), drivetrian);
+    }
+
+    public static Command turnToAngle(PIDDrivetrain drivetrain, double targetAngle) {
+      return new TurnToAngle(drivetrain, targetAngle);
     }
 }
