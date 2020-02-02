@@ -112,9 +112,7 @@ public class Commands {
   }
 
   public static Command arcadeDriveClosedLoop(ClosedLoopDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
-    DoubleSupplier velocitySupplier = () -> moveSupplier.getAsDouble() * drivetrain.getMaxSpeed();
-    DoubleSupplier angularVelocitySupplier = () -> turnSupplier.getAsDouble() * drivetrain.getMaxAngularSpeed();
-    return new RunCommand(() -> drivetrain.arcadeDriveClosedLoop(velocitySupplier.getAsDouble(), angularVelocitySupplier.getAsDouble()), drivetrain);
+    return new PIDDrive(drivetrain, moveSupplier, turnSupplier);
   }
 
   public static Command turnToAngle(ClosedLoopDrivetrain drivetrain, double targetAngle, double maxAngularSpeed) {
