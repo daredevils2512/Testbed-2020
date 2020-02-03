@@ -10,11 +10,12 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.PIDDrivetrain;
 import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 
 public class FollowBall extends CommandBase {
-  private final Drivetrain m_drivetrain;
+  private final PIDDrivetrain m_drivetrain;
   private final Limelight m_limelight;
   private final Pipeline m_pipeline;
 
@@ -27,7 +28,7 @@ public class FollowBall extends CommandBase {
   private double move;
   private double turn;
 
-  public FollowBall(Drivetrain drivetrain, Limelight limelight, Pipeline pipeline) {
+  public FollowBall(PIDDrivetrain drivetrain, Limelight limelight, Pipeline pipeline) {
     m_limelight = limelight;
     m_pipeline = pipeline;
     m_drivetrain = drivetrain;
@@ -53,13 +54,13 @@ public class FollowBall extends CommandBase {
     }
     SmartDashboard.putNumber("move", move);
     SmartDashboard.putNumber("turn", turn);
-    m_drivetrain.arcadeDrive(move, turn);
+    m_drivetrain.drive(move, turn);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drivetrain.arcadeDrive(0.0, 0.0);
+    m_drivetrain.drive(0.0, 0.0);
   }
 
   // Returns true when the command should end.

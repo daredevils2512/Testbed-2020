@@ -31,8 +31,6 @@ public class Drivetrain extends SubsystemBase {
   protected final WPI_TalonSRX m_rightDriveMaster;
   protected final WPI_TalonSRX m_rightDrive1;
 
-  protected final DifferentialDrive m_differentialDrive;
-
   protected final Encoder m_leftEncoder;
   protected final Encoder m_rightEncoder;
 
@@ -69,8 +67,6 @@ public class Drivetrain extends SubsystemBase {
     m_pigeon = new PigeonIMU(m_pigeonID);
     m_pigeon.configFactoryDefault();
 
-    m_differentialDrive = new DifferentialDrive(m_leftDriveMaster, m_rightDriveMaster);
-
     resetEncoders();
     setHeading(0);
   }
@@ -86,10 +82,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("yaw", getYaw());
     SmartDashboard.putNumber("pitch", getPitch());
     SmartDashboard.putNumber("roll", getRoll());
-  }
-
-  public void arcadeDrive(double move, double turn) {
-    m_differentialDrive.arcadeDrive(move, turn);
   }
 
   public int getLeftEncoderTicks() {

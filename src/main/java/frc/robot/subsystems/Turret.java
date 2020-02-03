@@ -7,17 +7,18 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Turret extends SubsystemBase {
   private final NetworkTable m_networkTable;
 
-  private final int m_turretMasterID = -1; // TODO: Configure CAN on turret
+  private final int m_turretMasterID = 6;
   private final TalonSRX m_turretMaster;
 
   // TODO: Find encoder and gearing details for turret
-  private final double m_encoderResolution = -1;
-  private final double m_gearRatio = -1;
+  private final double m_encoderResolution = 4096;
+  private final double m_gearRatio = 22.0 / 129.0;
 
   // TODO: Tune position PID
   private final int m_positionSlot = 0;
@@ -56,6 +57,9 @@ public class Turret extends SubsystemBase {
     m_P = m_networkTable.getEntry("P gain").getDouble(0.0);
     m_I = m_networkTable.getEntry("I gain").getDouble(0.0);
     m_D = m_networkTable.getEntry("D gain").getDouble(0.0);
+
+    SmartDashboard.putNumber("turret angle", getAngle());
+    SmartDashboard.putNumber("turrent ticks", getPosition());
   }
 
   private int getPosition() {
@@ -88,7 +92,8 @@ public class Turret extends SubsystemBase {
   }
 
   private double toDegrees(int encoderPulses) {
-    return (double) (encoderPulses / m_encoderResolution) * 360 * m_gearRatio;
+    // return ((double)encoderPulses / m_encoderResolution) * 360 * m_gearRatio;
+    return ((double)encoderPulses / m_encoderResolution) * 360 * m_gearRatio;
   }
 
   //returns a fused heading problaby

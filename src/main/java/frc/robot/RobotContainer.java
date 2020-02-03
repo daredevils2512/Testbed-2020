@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.subsystems.PIDDrivetrain;
+import frc.robot.subsystems.Turret;
 import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
@@ -26,9 +27,10 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final PIDDrivetrain m_pidDrivetrain = new PIDDrivetrain();
+  private final Turret m_turret = new Turret();
 
-  @SuppressWarnings("unused")
-  private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  // @SuppressWarnings("unused")
+  // private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
   
   private final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
   
@@ -39,7 +41,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     m_pidDrivetrain.setDefaultCommand(new PIDDrive(m_pidDrivetrain, m_controlBoard.xbox::getLeftStickY, m_controlBoard.xbox::getRightStickX));
-
+    m_turret.setDefaultCommand(Commands.runTurret(m_turret, m_controlBoard.extreme::getStickX));
     configureButtonBindings();
 
     m_autoCommand = null;
