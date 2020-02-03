@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ClosedLoopDrivetrain;
 import frc.robot.subsystems.FalconTest;
+import frc.robot.subsystems.KinematicsDrivetrain;
+import frc.robot.subsystems.OdometryDrivetrain;
 import frc.robot.subsystems.SimpleDrivetrain;
 
 public class Commands {
@@ -115,8 +117,8 @@ public class Commands {
     return new PIDDrive(drivetrain, moveSupplier, turnSupplier);
   }
 
-  public static Command turnToAngle(ClosedLoopDrivetrain drivetrain, double targetAngle, double maxAngularSpeed) {
-    return new TurnToAngle(drivetrain, targetAngle, maxAngularSpeed);
+  public static <T extends KinematicsDrivetrain & OdometryDrivetrain> Command turnToAngle(T drivetrain, double targetAngle, double maxAngularSpeed) {
+    return new TurnToAngle<T>(drivetrain, targetAngle, maxAngularSpeed);
   }
 
   public static Command driveStaight(ClosedLoopDrivetrain drivetrain, double distance, double maxSpeed, double maxAngularSpeed) {

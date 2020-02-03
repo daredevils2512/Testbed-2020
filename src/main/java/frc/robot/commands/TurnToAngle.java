@@ -9,10 +9,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ClosedLoopDrivetrain;
+import frc.robot.subsystems.KinematicsDrivetrain;
+import frc.robot.subsystems.OdometryDrivetrain;
 
-public class TurnToAngle extends CommandBase {
-  private final ClosedLoopDrivetrain m_drivetrain;
+public class TurnToAngle<T extends KinematicsDrivetrain & OdometryDrivetrain> extends CommandBase {
+  private final T m_drivetrain;
   private final PIDController m_angleController;
 
   private final double m_pGain = 0.5;
@@ -27,7 +28,7 @@ public class TurnToAngle extends CommandBase {
    * @param drivetrain
    * @param targetAngle Angle in degrees
    */
-  public TurnToAngle(ClosedLoopDrivetrain drivetrain, double targetAngle, double maxAngularSpeed) {
+  public TurnToAngle(T drivetrain, double targetAngle, double maxAngularSpeed) {
     addRequirements(drivetrain);
 
     m_angleController = new PIDController(m_pGain, m_iGain, m_dGain);
@@ -44,7 +45,7 @@ public class TurnToAngle extends CommandBase {
   public void execute() {
     double pidOutput = m_angleController.calculate(m_drivetrain.getPose().getRotation().getDegrees());
     double angularVelocity = pidOutput * m_maxAngularSpeed;
-    m_drivetrain.arcadeDriveClosedLoop(0, angularVelocity);
+    m_drivetrain.velocityArcadeDrive(0, angularVelocity);
   }
 
   @Override

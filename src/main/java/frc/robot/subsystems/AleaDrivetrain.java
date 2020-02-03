@@ -34,7 +34,7 @@ public final class AleaDrivetrain extends SubsystemBase implements SimpleDrivetr
   private final Encoder m_rightEncoder;
 
   private final double m_wheelDiameter = Units.inchesToMeters(4); // Diameter in meters
-  private final int m_encoderResolution = 128; // Ticks per revolution
+  private final int m_encoderResolution = 128; // Pulses per revolution
 
   /**
    * Creates a new AtlasDrivetrain.

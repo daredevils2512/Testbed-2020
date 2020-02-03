@@ -8,14 +8,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.controlboard.Extreme;
-import frc.robot.subsystems.AleaDrivetrain;
-import frc.robot.vision.Limelight;
-import frc.robot.vision.Limelight.Pipeline;
-import frc.robot.commands.*;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -24,13 +19,8 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final Extreme m_extreme = new Extreme(0);
-  private final AleaDrivetrain m_aleaDrivetrain = new AleaDrivetrain();
-
   @SuppressWarnings("unused")
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
-  
-  private final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
   
   private final Command m_autoCommand;
 
@@ -38,11 +28,6 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_aleaDrivetrain.setDefaultCommand(Commands.arcadeDrive(
-      m_aleaDrivetrain, 
-      () -> m_extreme.getStickY(0.2), 
-      () -> m_extreme.getStickRotation(0.2)));
-
     configureButtonBindings();
 
     m_autoCommand = null;

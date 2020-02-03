@@ -12,6 +12,9 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -25,7 +28,14 @@ import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
-public final class AtlasDrivetrain extends SubsystemBase implements ClosedLoopDrivetrain {
+public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDrivetrain, OdometryDrivetrain {
+  private final NetworkTable m_networkTable;
+  private final NetworkTableEntry m_leftVelocityEntry;
+  private final NetworkTableEntry m_rightVelocityEntry;
+  private final NetworkTableEntry m_xPositionEntry;
+  private final NetworkTableEntry m_yPositionEntry;
+  private final NetworkTableEntry m_headingEntry;
+
   private final int m_leftDriveMasterID = 1;
   private final int m_leftDriveFollowerID = 2;
   private final int m_rightDriveMasterID = 3;
@@ -74,6 +84,13 @@ public final class AtlasDrivetrain extends SubsystemBase implements ClosedLoopDr
    * Creates a new AtlasDrivetrain.
    */
   public AtlasDrivetrain() {
+    m_networkTable = NetworkTableInstance.getDefault().getTable(getName());
+    m_leftVelocityEntry = m_networkTable.getEntry("Left velocity");
+    m_rightVelocityEntry = m_networkTable.getEntry("Right velocity");
+    m_xPositionEntry = m_networkTable.getEntry("X position");
+    m_yPositionEntry = m_networkTable.getEntry("Y position");
+    m_headingEntry = m_networkTable.getEntry("Heading");
+
     m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
     m_leftDriveFollower = new WPI_TalonSRX(m_leftDriveFollowerID);
     m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
@@ -102,7 +119,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements ClosedLoopDr
     m_pigeon.configFactoryDefault();
 
     m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
-    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getYaw()));
+    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     m_feedforward = new SimpleMotorFeedforward(m_staticGain, m_velocityGain);
     m_leftPIDController = new PIDController(m_leftPGain, m_leftIGain, m_leftDGain);
     m_rightPIDController = new PIDController(m_rightPGain, m_rightIGain, m_rightDGain);
@@ -112,6 +129,37 @@ public final class AtlasDrivetrain extends SubsystemBase implements ClosedLoopDr
   public void periodic() {
     updateGyroData();
     updatePose();
+
+    m_leftVelocityEntry.setNumber(getLeftVelocity());
+    m_rightVelocityEntry.setNumber(getRightVelocity());
+    m_xPositionEntry.setNumber(getPose().getTranslation().getX());
+    m_yPositionEntry.setNumber(getPose().getTranslation().getY());
+    m_headingEntry.setNumber(getPose().getRotation().getDegrees());
+  }
+
+  @Override
+  public double getLeftDistance() {
+    return m_leftEncoder.getDistance();
+  }
+
+  @Override
+  public double getRightDistance() {
+    return m_rightEncoder.getDistance();
+  }
+
+  @Override
+  public double getLeftVelocity() {
+    return m_leftEncoder.getRate();
+  }
+
+  @Override
+  public double getRightVelocity() {
+    return m_rightEncoder.getRate();
+  }
+
+  @Override
+  public double getHeading() {
+    return m_gyroData[0];
   }
 
   @Override
@@ -129,13 +177,28 @@ public final class AtlasDrivetrain extends SubsystemBase implements ClosedLoopDr
   }
 
   @Override
+  public void resetDriveEncoders() {
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
+    m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(getHeading()));
+  }
+
+  @Override
+  public void resetHeading() {
+    m_pigeon.setFusedHeading(0);
+    m_pigeon.setYaw(0);
+    Pose2d pose = m_odometry.getPoseMeters();
+    m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
+  }
+
+  @Override
   public void arcadeDrive(double move, double turn) {
     m_leftDriveMaster.set(ControlMode.PercentOutput, move + turn);
     m_rightDriveMaster.set(ControlMode.PercentOutput, move - turn);
   }
 
   @Override
-  public void arcadeDriveClosedLoop(double velocity, double angularVelocity) {
+  public void velocityArcadeDrive(double velocity, double angularVelocity) {
     velocity = MathUtil.clamp(velocity, -m_maxSpeed, m_maxSpeed);
     angularVelocity = MathUtil.clamp(angularVelocity, -m_maxAngularSpeed, m_maxAngularSpeed);
     setWheelSpeeds(m_kinematics.toWheelSpeeds(new ChassisSpeeds(velocity, 0, angularVelocity)));
@@ -153,9 +216,8 @@ public final class AtlasDrivetrain extends SubsystemBase implements ClosedLoopDr
 
   @Override
   public void resetPose() {
-    m_leftEncoder.reset();
-    m_rightEncoder.reset();
-    m_pigeon.setFusedHeading(0);
+    resetDriveEncoders();
+    resetHeading();
     m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(0));
   }
 
@@ -163,11 +225,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements ClosedLoopDr
     m_pigeon.getYawPitchRoll(m_gyroData);
   }
 
-  private double getYaw() {
-    return m_gyroData[0];
-  }
-
   private void updatePose() {
-    m_odometry.update(Rotation2d.fromDegrees(getYaw()), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
   }
 }
