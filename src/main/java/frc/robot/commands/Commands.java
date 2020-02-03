@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.subsystems.ClosedLoopDrivetrain;
 import frc.robot.subsystems.FalconTest;
 import frc.robot.subsystems.KinematicsDrivetrain;
 import frc.robot.subsystems.OdometryDrivetrain;
@@ -121,7 +120,7 @@ public class Commands {
     return new TurnToAngle<T>(drivetrain, targetAngle, maxAngularSpeed);
   }
 
-  public static Command driveStaight(ClosedLoopDrivetrain drivetrain, double distance, double maxSpeed, double maxAngularSpeed) {
-    return new DriveStraight(drivetrain, distance, maxSpeed, maxAngularSpeed);
+  public static <T extends KinematicsDrivetrain & OdometryDrivetrain> Command driveStaight(T drivetrain, double distance, double maxSpeed, double maxAngularSpeed) {
+    return new DriveStraight<T>(drivetrain, distance, maxSpeed, maxAngularSpeed);
   }
 }

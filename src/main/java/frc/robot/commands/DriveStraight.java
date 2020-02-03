@@ -14,9 +14,10 @@ import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
-import frc.robot.subsystems.ClosedLoopDrivetrain;
+import frc.robot.subsystems.KinematicsDrivetrain;
+import frc.robot.subsystems.OdometryDrivetrain;
 
-public class DriveStraight extends CommandBase {
+public class DriveStraight<T extends KinematicsDrivetrain & OdometryDrivetrain> extends CommandBase {
   private static final double m_distancePGain = 0.5;
   private static final double m_distanceIGain = 0;
   private static final double m_distanceDGain = 0;
@@ -28,7 +29,7 @@ public class DriveStraight extends CommandBase {
   private static final double m_angleTolerance = 10; // Angle in degrees
   private static final double m_angularVelocityTolerance = 1; // Angular velocity in degrees per second
 
-  private final ClosedLoopDrivetrain m_drivetrain;
+  private final T m_drivetrain;
   private final Pose2d m_endingPose;
 
   private final double m_maxSpeed; // Speed in meters per second
@@ -40,7 +41,7 @@ public class DriveStraight extends CommandBase {
   /**
    * Creates a new DriveStraight.
    */
-  public DriveStraight(ClosedLoopDrivetrain drivetrain, double distance, double maxSpeed, double maxAngularSpeed) {
+  public DriveStraight(T drivetrain, double distance, double maxSpeed, double maxAngularSpeed) {
     addRequirements(drivetrain);
 
     m_drivetrain = drivetrain;
@@ -79,11 +80,11 @@ public class DriveStraight extends CommandBase {
       
       double velocity = (distanceControllerOutput - angleControllerOutput) * m_maxSpeed;
       double angularVelocity = angleControllerOutput * m_maxAngularSpeed;
-      m_drivetrain.arcadeDriveClosedLoop(velocity, angularVelocity);
+      m_drivetrain.velocityArcadeDrive(velocity, angularVelocity);
     } else {
       double angleControllerOutput = MathUtil.clamp(m_angleController.calculate(transform.getRotation().getDegrees()), -1, 1);
       double angularVelocity = angleControllerOutput * m_maxAngularSpeed;
-      m_drivetrain.arcadeDriveClosedLoop(0, angularVelocity);
+      m_drivetrain.velocityArcadeDrive(0, angularVelocity);
     }
   }
 
