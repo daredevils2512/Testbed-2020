@@ -197,6 +197,11 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
     m_rightDriveMaster.set(ControlMode.PercentOutput, move - turn);
   }
 
+  /**
+   * Set the drivetrain's linear and angular velocity targets
+   * @param velocity Linear velocity in meters per second
+   * @param angularVelocity Angular velocity in radians per second
+   */
   @Override
   public void velocityArcadeDrive(double velocity, double angularVelocity) {
     velocity = MathUtil.clamp(velocity, -m_maxSpeed, m_maxSpeed);
@@ -226,6 +231,6 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   }
 
   private void updatePose() {
-    m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftDistance(), getRightDistance());
   }
 }
