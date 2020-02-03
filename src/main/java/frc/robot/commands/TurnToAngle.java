@@ -43,8 +43,11 @@ public class TurnToAngle<T extends KinematicsDrivetrain & OdometryDrivetrain> ex
 
   @Override
   public void execute() {
-    double pidOutput = m_angleController.calculate(m_drivetrain.getPose().getRotation().getDegrees());
+    double angleMeasurement = m_drivetrain.getPose().getRotation().getDegrees();
+    angleMeasurement = (angleMeasurement - 180) % 360 + 180;
+    double pidOutput = m_angleController.calculate(angleMeasurement);
     double angularVelocity = pidOutput * m_maxAngularSpeed;
+
     m_drivetrain.velocityArcadeDrive(0, angularVelocity);
   }
 

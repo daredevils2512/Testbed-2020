@@ -109,11 +109,11 @@ public class Commands {
     return new SetFalconVelocityCommand(falconTest, velocity);
   }
 
-  public static Command arcadeDrive(SimpleDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
+  public static Command simpleArcadeDrive(SimpleDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
     return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
   }
 
-  public static Command arcadeDriveClosedLoop(ClosedLoopDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
+  public static Command velocityArcadeDrive(KinematicsDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
     return new PIDDrive(drivetrain, moveSupplier, turnSupplier);
   }
 
