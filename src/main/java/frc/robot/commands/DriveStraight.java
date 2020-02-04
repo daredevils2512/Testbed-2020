@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
-import frc.robot.subsystems.KinematicsDrivetrain;
-import frc.robot.subsystems.OdometryDrivetrain;
+import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
+import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 
 public class DriveStraight<T extends KinematicsDrivetrain & OdometryDrivetrain> extends CommandBase {
   private static final double m_distancePGain = 0.5;

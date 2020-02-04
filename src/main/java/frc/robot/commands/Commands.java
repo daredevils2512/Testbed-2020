@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.FalconTest;
-import frc.robot.subsystems.KinematicsDrivetrain;
-import frc.robot.subsystems.OdometryDrivetrain;
-import frc.robot.subsystems.SimpleDrivetrain;
+import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
+import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
+import frc.robot.subsystems.drivetrain.SimpleDrivetrain;
 
 public class Commands {
   private static class SetFalconPositionCommand extends CommandBase {

@@ -5,10 +5,13 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.drivetrain;
 
-public interface KinematicsDrivetrain extends EncoderDrivetrain {
-  double getMaxSpeed();
-  double getMaxAngularSpeed();
-  void velocityArcadeDrive(double velocity, double angularVelocity);
+import edu.wpi.first.wpilibj2.command.Subsystem;
+
+/**
+ * Add your docs here.
+ */
+public interface SimpleDrivetrain extends Subsystem {
+  public void arcadeDrive(double move, double turn);
 }

@@ -5,11 +5,17 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.drivetrain;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 
-public interface OdometryDrivetrain extends EncoderDrivetrain, GyroDrivetrain {
+/**
+ * Add your docs here.
+ */
+public interface ClosedLoopDrivetrain extends SimpleDrivetrain {
+  double getMaxSpeed();
+  double getMaxAngularSpeed();
   Pose2d getPose();
+  void arcadeDriveClosedLoop(double velocity, double angularVelocity);
   void resetPose();
 }

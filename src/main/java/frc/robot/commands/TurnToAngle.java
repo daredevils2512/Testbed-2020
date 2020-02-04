@@ -9,8 +9,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.KinematicsDrivetrain;
-import frc.robot.subsystems.OdometryDrivetrain;
+import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
+import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 
 public class TurnToAngle<T extends KinematicsDrivetrain & OdometryDrivetrain> extends CommandBase {
   private final T m_drivetrain;

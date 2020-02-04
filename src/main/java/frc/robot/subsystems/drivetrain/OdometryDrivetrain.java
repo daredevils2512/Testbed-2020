@@ -5,13 +5,11 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.drivetrain;
 
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 
-/**
- * Add your docs here.
- */
-public interface SimpleDrivetrain extends Subsystem {
-  public void arcadeDrive(double move, double turn);
+public interface OdometryDrivetrain extends EncoderDrivetrain, GyroDrivetrain {
+  Pose2d getPose();
+  void resetPose();
 }

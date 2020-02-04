@@ -5,12 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.drivetrain;
 
-public interface EncoderDrivetrain extends SimpleDrivetrain {
-  double getLeftDistance();
-  double getRightDistance();
-  double getLeftVelocity();
-  double getRightVelocity();
-  void resetDriveEncoders();
+public interface GyroDrivetrain extends SimpleDrivetrain {
+  double getHeading();
+  void resetHeading();
 }
