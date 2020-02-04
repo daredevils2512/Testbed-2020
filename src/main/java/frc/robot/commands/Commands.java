@@ -123,4 +123,8 @@ public class Commands {
     public static Command runTurretPID(Turret turret, double angle) {
         return new RunCommand(() -> turret.runPosition(angle), turret);
     }
+
+    public static Command resetTurret(Turret turret) {
+        return new RunCommand(() -> turret.resetEncoder(), turret);
+    }
 }
