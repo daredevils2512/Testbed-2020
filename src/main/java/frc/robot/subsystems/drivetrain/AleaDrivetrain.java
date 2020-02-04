@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public final class AleaDrivetrain extends SubsystemBase implements SimpleDrivetrain {
+public final class AleaDrivetrain extends SubsystemBase implements EncoderDrivetrain {
   private final int m_leftDriveMasterID = 10;
   private final int m_leftDriveFollowerID = 11;
   private final int m_rightDriveMasterID = 12;
@@ -68,6 +68,32 @@ public final class AleaDrivetrain extends SubsystemBase implements SimpleDrivetr
   @Override
   public void periodic() {
     
+  }
+
+  @Override
+  public double getLeftDistance() {
+    return m_leftEncoder.getDistance();
+  }
+
+  @Override
+  public double getRightDistance() {
+    return m_rightEncoder.getDistance();
+  }
+
+  @Override
+  public double getLeftVelocity() {
+    return m_leftEncoder.getRate();
+  }
+
+  @Override
+  public double getRightVelocity() {
+    return m_rightEncoder.getRate();
+  }
+
+  @Override
+  public void resetDriveEncoders() {
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
   }
 
   @Override
