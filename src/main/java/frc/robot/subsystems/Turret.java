@@ -20,11 +20,15 @@ public class Turret extends SubsystemBase {
   private final double m_encoderResolution = 4096;
   private final double m_gearRatio = 22.0 / 129.0;
 
+  private final double m_maxTurnDegrees = 180;
+
   // TODO: Tune position PID
   private final int m_positionSlot = 0;
-  private double m_P = 0;
+  private double m_P = 8;
   private double m_I = 0;
-  private double m_D = 0;
+  private double m_D = 35;
+  private int m_motionAcceleration = 2000;
+  private int m_motionCruiseVelocity = 2000;
 
   /**
    * Creates a new turret
@@ -39,6 +43,9 @@ public class Turret extends SubsystemBase {
     m_turretMaster.config_kD(m_positionSlot, m_D);
     m_turretMaster.config_kI(m_positionSlot, m_I);
     m_turretMaster.config_kP(m_positionSlot, m_P);
+    m_turretMaster.configMotionAcceleration(m_motionAcceleration);
+    m_turretMaster.configMotionCruiseVelocity(m_motionCruiseVelocity);
+
     m_turretMaster.configClosedLoopPeakOutput(m_positionSlot, 1.0);
     m_turretMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
 
@@ -49,6 +56,11 @@ public class Turret extends SubsystemBase {
     m_networkTable.getEntry("P gain").setNumber(m_P);
     m_networkTable.getEntry("I gain").setNumber(m_I);
     m_networkTable.getEntry("D gain").setNumber(m_D);
+
+    m_turretMaster.configForwardSoftLimitThreshold(toEncoderPulses(m_maxTurnDegrees));
+    m_turretMaster.configReverseSoftLimitThreshold(toEncoderPulses(-m_maxTurnDegrees));
+    m_turretMaster.configForwardSoftLimitEnable(true);
+    m_turretMaster.configReverseSoftLimitEnable(true);
   }
 
   @Override
@@ -57,9 +69,13 @@ public class Turret extends SubsystemBase {
     m_P = m_networkTable.getEntry("P gain").getDouble(0.0);
     m_I = m_networkTable.getEntry("I gain").getDouble(0.0);
     m_D = m_networkTable.getEntry("D gain").getDouble(0.0);
+    m_turretMaster.config_kD(m_positionSlot, m_D);
+    m_turretMaster.config_kI(m_positionSlot, m_I);
+    m_turretMaster.config_kP(m_positionSlot, m_P);
 
     SmartDashboard.putNumber("turret angle", getAngle());
     SmartDashboard.putNumber("turrent ticks", getPosition());
+    SmartDashboard.putNumber("turret angle in ticks", toEncoderPulses(getAngle()));
   }
 
   private int getPosition() {
@@ -83,6 +99,11 @@ public class Turret extends SubsystemBase {
     m_turretMaster.set(ControlMode.PercentOutput, speed);
   }
 
+  public void runPosition(double degrees) {
+    m_turretMaster.set(ControlMode.MotionMagic, toEncoderPulses(degrees));
+    SmartDashboard.putNumber("thing", m_turretMaster.getStatorCurrent());
+  }
+
   /**
    * Set a target angle for position PID
    * @param angle Angle in degrees
@@ -97,7 +118,7 @@ public class Turret extends SubsystemBase {
   }
 
   //returns a fused heading problaby
-  private double toEncoderPulses(double angle) {
-    return (int) (angle / 360) * m_encoderResolution;
+  private int toEncoderPulses(double angle) {
+    return (int)(angle / (360 * m_gearRatio) *  m_encoderResolution);
   }
 }

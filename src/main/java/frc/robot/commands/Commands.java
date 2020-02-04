@@ -119,4 +119,8 @@ public class Commands {
     public static Command runTurret(Turret turret, DoubleSupplier turnSupplier) {
         return new RunCommand(() -> turret.setSpeed(turnSupplier.getAsDouble()), turret);
     }
+
+    public static Command runTurretPID(Turret turret, double angle) {
+        return new RunCommand(() -> turret.runPosition(angle), turret);
+    }
 }

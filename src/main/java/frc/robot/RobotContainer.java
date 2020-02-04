@@ -60,6 +60,7 @@ public class RobotContainer {
 
     // Turn to 0 degrees
     m_controlBoard.xbox.xButton.whenPressed(Commands.turnToAngle(m_pidDrivetrain, 0));
+    m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
   }
 
   /**
