@@ -34,7 +34,7 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_aleaDrivetrain.setDefaultCommand(Commands.simpleArcadeDrive(
+    m_aleaDrivetrain.setDefaultCommand(Commands.velocityArcadeDrive(
       m_aleaDrivetrain, 
       () -> getMove(), 
       () -> getTurn()));
