@@ -28,14 +28,14 @@ public class PIDDrive extends CommandBase {
     m_drivetrain = drivetrain;
     m_moveSupplier = moveSupplier;
     m_turnSupplier = turnSupplier;
-    m_accelerationLimiter = new SlewRateLimiter(10); // Pass in an acceleration in meters per second per second
-    m_angularAccelerationLimiter = new SlewRateLimiter(10); // Pass in an angular acceleration in radians per second per second
+    m_accelerationLimiter = new SlewRateLimiter(10);
+    m_angularAccelerationLimiter = new SlewRateLimiter(10);
   }
 
   @Override
   public void execute() {
-    double velocity = m_accelerationLimiter.calculate(m_moveSupplier.getAsDouble() * m_drivetrain.getMaxSpeed());
-    double angularVelocity = m_angularAccelerationLimiter.calculate(m_turnSupplier.getAsDouble() * m_drivetrain.getMaxAngularSpeed());
+    double velocity = m_accelerationLimiter.calculate(m_moveSupplier.getAsDouble()) * m_drivetrain.getMaxSpeed();
+    double angularVelocity = m_angularAccelerationLimiter.calculate(m_turnSupplier.getAsDouble()) * m_drivetrain.getMaxAngularSpeed();
     m_drivetrain.velocityArcadeDrive(velocity, angularVelocity);
   }
 

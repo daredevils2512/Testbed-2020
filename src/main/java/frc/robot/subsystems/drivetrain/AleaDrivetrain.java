@@ -11,11 +11,26 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.math.MathUtil;
 
-public final class AleaDrivetrain extends SubsystemBase implements EncoderDrivetrain {
+public final class AleaDrivetrain extends SubsystemBase implements KinematicsDrivetrain {
+  private final NetworkTable m_networkTable;
+  private final NetworkTableEntry m_leftVelocityEntry;
+  private final NetworkTableEntry m_rightVelocityEntry;
+  private final NetworkTableEntry m_leftVelocityErrorEntry;
+  private final NetworkTableEntry m_rightVelocityErrorEntry;
+
   private final int m_leftDriveMasterID = 10;
   private final int m_leftDriveFollowerID = 11;
   private final int m_rightDriveMasterID = 12;
@@ -34,12 +49,36 @@ public final class AleaDrivetrain extends SubsystemBase implements EncoderDrivet
   private final Encoder m_rightEncoder;
 
   private final double m_wheelDiameter = Units.inchesToMeters(4); // Diameter in meters
+  private final double m_trackWidth = 0.67; // Width in meters
   private final int m_encoderResolution = 128; // Pulses per revolution
+  private final double m_staticGain = 2;
+  private final double m_velocityGain = 1;
+
+  private final DifferentialDriveKinematics m_kinematics;
+  private final SimpleMotorFeedforward m_feedforward;
+  private final PIDController m_leftVelocityController;
+  private final PIDController m_rightVelocityController;
+
+  private final double m_leftPGain = 0.8;
+  private final double m_leftIGain = 0;
+  private final double m_leftDGain = 0;
+  private final double m_rightPGain = 0.8;
+  private final double m_rightIGain = 0;
+  private final double m_rightDGain = 0;
+
+  private final double m_maxSpeed = 3; // Speed in meters per second
+  private final double m_maxAngularSpeed = 4; // Angular speed in radians per second
 
   /**
    * Creates a new AtlasDrivetrain.
    */
   public AleaDrivetrain() {
+    m_networkTable = NetworkTableInstance.getDefault().getTable(getName());
+    m_leftVelocityEntry = m_networkTable.getEntry("Left velocity");
+    m_rightVelocityEntry = m_networkTable.getEntry("Right velocity");
+    m_leftVelocityErrorEntry = m_networkTable.getEntry("Left velocity error");
+    m_rightVelocityErrorEntry = m_networkTable.getEntry("Right velocity error");
+
     m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
     m_leftDriveFollower = new WPI_TalonSRX(m_leftDriveFollowerID);
     m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
@@ -63,11 +102,17 @@ public final class AleaDrivetrain extends SubsystemBase implements EncoderDrivet
     m_rightEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
     m_leftEncoder.setReverseDirection(false);
     m_rightEncoder.setReverseDirection(true);
+
+    m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
+    m_feedforward = new SimpleMotorFeedforward(m_staticGain, m_velocityGain);
+    m_leftVelocityController = new PIDController(m_leftPGain, m_leftIGain, m_leftDGain);
+    m_rightVelocityController = new PIDController(m_rightPGain, m_rightIGain, m_rightDGain);
   }
 
   @Override
   public void periodic() {
-    
+    m_leftVelocityEntry.setNumber(getLeftVelocity());
+    m_rightVelocityEntry.setNumber(getRightVelocity());
   }
 
   @Override
@@ -97,9 +142,39 @@ public final class AleaDrivetrain extends SubsystemBase implements EncoderDrivet
   }
 
   @Override
+  public double getMaxSpeed() {
+    return m_maxSpeed;
+  }
+
+  @Override
+  public double getMaxAngularSpeed() {
+    return m_maxAngularSpeed;
+  }
+
+  @Override
   public void arcadeDrive(double move, double turn) {
     m_leftDriveMaster.set(ControlMode.PercentOutput, move + turn);
     m_rightDriveMaster.set(ControlMode.PercentOutput, move - turn);
+  }
+
+  @Override
+  public void velocityArcadeDrive(double velocity, double angularVelocity) {
+    velocity = MathUtil.clamp(velocity, -m_maxSpeed, m_maxSpeed);
+    angularVelocity = MathUtil.clamp(angularVelocity, -m_maxAngularSpeed, m_maxAngularSpeed);
+    setSpeeds(m_kinematics.toWheelSpeeds(new ChassisSpeeds(velocity, 0, angularVelocity)));
+  }
+
+  public void setSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
+    double leftFeedforward = m_feedforward.calculate(wheelSpeeds.leftMetersPerSecond);
+    double rightFeedforward = m_feedforward.calculate(wheelSpeeds.rightMetersPerSecond);
+    double leftPIDOutput = m_leftVelocityController.calculate(getLeftVelocity(), wheelSpeeds.leftMetersPerSecond);
+    double rightPIDOutput = m_rightVelocityController.calculate(getRightVelocity(), wheelSpeeds.rightMetersPerSecond);
+
+    m_leftDriveMaster.setVoltage(leftFeedforward + leftPIDOutput);
+    m_rightDriveMaster.setVoltage(rightFeedforward + rightPIDOutput);
+
+    m_leftVelocityErrorEntry.setNumber(wheelSpeeds.leftMetersPerSecond);
+    m_rightVelocityErrorEntry.setNumber(wheelSpeeds.rightMetersPerSecond);
   }
 }
 

@@ -74,8 +74,8 @@ public class DriveStraight<T extends KinematicsDrivetrain & OdometryDrivetrain> 
 
     if(!m_distanceController.atSetpoint()) {
       // Get the rotation from the current translation to the target translation
-      Translation2d translation = m_endingPose.minus(m_drivetrain.getPose()).getTranslation();
-      Rotation2d rotation = new Rotation2d(translation.getX(), translation.getY()).minus(m_drivetrain.getPose().getRotation()).minus(m_drivetrain.getPose().getRotation());
+      Translation2d translation = transform.getTranslation();
+      Rotation2d rotation = new Rotation2d(translation.getX(), translation.getY()).minus(m_drivetrain.getPose().getRotation());
       double angleControllerOutput = MathUtil.clamp(m_angleController.calculate(rotation.getDegrees()), -1, 1);
       
       double velocity = (distanceControllerOutput - angleControllerOutput) * m_maxSpeed;
