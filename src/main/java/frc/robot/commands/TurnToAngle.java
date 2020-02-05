@@ -8,24 +8,51 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.subsystems.PIDDrivetrain;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
+import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 
-public class TurnToAngle extends PIDCommand {
-  private final double m_turnTolerance = 5; // Degrees
-  private final double m_turnSpeedTolerance = 1; // Degrees per second
+public class TurnToAngle<T extends KinematicsDrivetrain & OdometryDrivetrain> extends CommandBase {
+  private final T m_drivetrain;
+  private final PIDController m_angleController;
 
-  public TurnToAngle(PIDDrivetrain drivetrain, double targetAngle) {
-    super(new PIDController(0.5, 0, 0), drivetrain::getYaw, targetAngle, output -> {
-      drivetrain.drive(0, output * drivetrain.k_maxTurn);
-    }, drivetrain);
+  private final double m_pGain = 0.5;
+  private final double m_iGain = 0;
+  private final double m_dGain = 0;
+  private final double m_angleTolerance = 5; // Degrees
+  private final double m_angularSpeedTolerance = 1; // Degrees per second
+  private final double m_maxAngularSpeed;
 
-    getController().enableContinuousInput(-180, 180);
-    getController().setTolerance(m_turnTolerance, m_turnSpeedTolerance);
+  /**
+   * Turn the robot to a set angle using PID
+   * @param drivetrain
+   * @param targetAngle Angle in degrees
+   */
+  public TurnToAngle(T drivetrain, double targetAngle, double maxAngularSpeed) {
+    addRequirements(drivetrain);
+
+    m_angleController = new PIDController(m_pGain, m_iGain, m_dGain);
+    m_angleController.enableContinuousInput(-180, 180);
+    m_angleController.setTolerance(m_angleTolerance, m_angularSpeedTolerance);
+    m_angleController.setSetpoint(targetAngle);
+    
+    m_drivetrain = drivetrain;
+    m_maxAngularSpeed = maxAngularSpeed;
+
+  }
+
+  @Override
+  public void execute() {
+    double angleMeasurement = m_drivetrain.getPose().getRotation().getDegrees();
+    angleMeasurement = (angleMeasurement - 180) % 360 + 180;
+    double pidOutput = m_angleController.calculate(angleMeasurement);
+    double angularVelocity = pidOutput * m_maxAngularSpeed;
+
+    m_drivetrain.velocityArcadeDrive(0, angularVelocity);
   }
 
   @Override
   public boolean isFinished() {
-    return getController().atSetpoint();
+    return m_angleController.atSetpoint();
   }
 }
