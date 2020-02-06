@@ -85,6 +85,7 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
   private final int m_encoderResolution = 256;
   private final double m_gearRatio = 3 / 1;
   private final double m_wheelDiameter = Units.inchesToMeters(6); // Wheel diameter in meters
+  private final double m_wheelCircumference = Math.PI * m_wheelDiameter; // Circumference in meters
   // TODO: Find out track width (can be calculated using the characterization
   // tool)
   private final double m_trackWidth = Units.inchesToMeters(28);
@@ -151,8 +152,8 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
 
     m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
     m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
-    m_leftEncoder.setDistancePerPulse(m_wheelDiameter * Math.PI * m_gearRatio / m_encoderResolution);
-    m_rightEncoder.setDistancePerPulse(m_wheelDiameter * Math.PI * m_gearRatio / m_encoderResolution);
+    m_leftEncoder.setDistancePerPulse(m_wheelCircumference / m_gearRatio / m_encoderResolution);
+    m_rightEncoder.setDistancePerPulse(m_wheelCircumference / m_gearRatio / m_encoderResolution);
 
     m_pigeon = new PigeonIMU(m_pigeonID);
     m_pigeon.configFactoryDefault();
