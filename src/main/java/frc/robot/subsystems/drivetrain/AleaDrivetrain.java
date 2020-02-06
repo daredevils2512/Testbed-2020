@@ -26,6 +26,8 @@ import edu.wpi.first.wpiutil.math.MathUtil;
 
 public final class AleaDrivetrain extends SubsystemBase implements KinematicsDrivetrain {
   private final NetworkTable m_networkTable;
+  private final NetworkTableEntry m_leftDistanceEntry;
+  private final NetworkTableEntry m_rightDistanceEntry;
   private final NetworkTableEntry m_leftVelocityEntry;
   private final NetworkTableEntry m_rightVelocityEntry;
   private final NetworkTableEntry m_leftVelocityErrorEntry;
@@ -49,6 +51,8 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
   private final Encoder m_rightEncoder;
 
   private final double m_wheelDiameter = Units.inchesToMeters(4); // Diameter in meters
+  private final double m_wheelCircumference = Math.PI * m_wheelDiameter;
+  private final double m_gearRatio = 8 / 1; // Gearing between encoders and wheels
   private final double m_trackWidth = 0.67; // Width in meters
   private final int m_encoderResolution = 128; // Pulses per revolution
   private final double m_staticGain = 2;
@@ -74,6 +78,8 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
    */
   public AleaDrivetrain() {
     m_networkTable = NetworkTableInstance.getDefault().getTable(getName());
+    m_leftDistanceEntry = m_networkTable.getEntry("Left distance");
+    m_rightDistanceEntry = m_networkTable.getEntry("Right distance");
     m_leftVelocityEntry = m_networkTable.getEntry("Left velocity");
     m_rightVelocityEntry = m_networkTable.getEntry("Right velocity");
     m_leftVelocityErrorEntry = m_networkTable.getEntry("Left velocity error");
@@ -98,8 +104,8 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
 
     m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
     m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
-    m_leftEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
-    m_rightEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
+    m_leftEncoder.setDistancePerPulse(m_wheelCircumference / m_gearRatio / m_encoderResolution);
+    m_rightEncoder.setDistancePerPulse(m_wheelCircumference / m_gearRatio / m_encoderResolution);
     m_leftEncoder.setReverseDirection(false);
     m_rightEncoder.setReverseDirection(true);
 
@@ -111,6 +117,8 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
 
   @Override
   public void periodic() {
+    m_leftDistanceEntry.setNumber(getLeftDistance());
+    m_rightDistanceEntry.setNumber(getRightDistance());
     m_leftVelocityEntry.setNumber(getLeftVelocity());
     m_rightVelocityEntry.setNumber(getRightVelocity());
   }
