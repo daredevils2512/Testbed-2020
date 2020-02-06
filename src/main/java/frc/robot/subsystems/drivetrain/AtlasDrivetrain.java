@@ -192,9 +192,13 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   }
 
   @Override
-  public void arcadeDrive(double move, double turn) {
-    m_leftDriveMaster.set(ControlMode.PercentOutput, move + turn);
-    m_rightDriveMaster.set(ControlMode.PercentOutput, move - turn);
+  public void driveLeft(double speed) {
+    m_leftDriveMaster.set(ControlMode.PercentOutput, speed);
+  }
+
+  @Override
+  public void driveRight(double speed) {
+    m_rightDriveMaster.set(ControlMode.PercentOutput, speed);
   }
 
   /**
