@@ -46,6 +46,9 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    m_robotContainer.m_powerCellLimelight.getLastPosition(); //update calls probably going to move sometimes
+    m_robotContainer.m_hexagonLimelight.getLastPosition();
+    m_robotContainer.m_hexagonPosition.updatePosition();
     CommandScheduler.getInstance().run();
   }
 

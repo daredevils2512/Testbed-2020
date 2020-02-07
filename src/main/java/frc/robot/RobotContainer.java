@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.subsystems.PIDDrivetrain;
 import frc.robot.subsystems.Turret;
+import frc.robot.utils.HexagonPosition;
 import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
@@ -27,14 +28,20 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class RobotContainer {
   private final ControlBoard m_controlBoard = new ControlBoard();
   private final PIDDrivetrain m_pidDrivetrain = new PIDDrivetrain();
-  private final Turret m_turret = new Turret();
+
 
   // @SuppressWarnings("unused")
   // private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
   
-  private final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
+  public final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
+  public final Limelight m_hexagonLimelight = new Limelight(Pipeline.Hexagon2d);
   
-  private final Command m_autoCommand;
+  private final Turret m_turret = new Turret();
+  
+  public final HexagonPosition m_hexagonPosition = new HexagonPosition(m_pidDrivetrain, m_turret, m_hexagonLimelight);
+
+  private final Command m_autoCommand;  
+
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -60,9 +67,10 @@ public class RobotContainer {
 
     // Turn to 0 degrees
     m_controlBoard.xbox.xButton.whenPressed(Commands.turnToAngle(m_pidDrivetrain, 0));
-    m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
+    // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
 
     m_controlBoard.xbox.yButton.whenPressed(Commands.resetTurret(m_turret));
+    m_controlBoard.extreme.trigger.whileHeld(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter
   }
 
   /**
