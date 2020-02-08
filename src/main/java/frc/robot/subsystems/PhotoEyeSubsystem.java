@@ -1,55 +1,80 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.sensors.PhotoEye;
 
 public class PhotoEyeSubsystem extends SubsystemBase {
-  private final NetworkTable m_networkTable;
-
-  private final int m_dioPort1 = 1;
-  private final int m_dioPort2 = 2;
-  private final int m_dioPort3 = 3;
-  private final int m_dioPort4 = 4;
-  private final PhotoEye m_photoEye1;
-  private final PhotoEye m_photoEye2;
-  private final PhotoEye m_photoEye3;
-  private final PhotoEye m_photoEye4;
+  private final int m_photoeye1ID = -1;
+  private final int m_photoeye2ID = -1;
+  private DigitalInput m_photoeye1;
+  private DigitalInput m_photoeye2;
+  
+  //these are for the ball counter
+  private int ballCount;
+  private boolean ballIn;
+  private boolean ballOut;
+  private boolean invalidBallCount;
 
   /**
-   * Creates a new PhotoEyeSubsystem.
+   * Creates a new PowerCellManager.
    */
   public PhotoEyeSubsystem() {
-    m_networkTable = NetworkTableInstance.getDefault().getTable(getName());
+    m_photoeye1 = new DigitalInput(m_photoeye1ID);
+    m_photoeye2 = new DigitalInput(m_photoeye2ID);
+    
+    ballCount = 0;
+    ballIn = false;
+    ballOut = false;
+    invalidBallCount = false;
+  }
+  
+  public boolean getInBall() {
+    return !m_photoeye1.get();
+  }
 
-    m_photoEye1 = new PhotoEye(m_dioPort1);
-    m_photoEye2 = new PhotoEye(m_dioPort2);
-    m_photoEye3 = new PhotoEye(m_dioPort3);
-    m_photoEye4 = new PhotoEye(m_dioPort4);
+  public boolean getOutBall() {
+    return !m_photoeye2.get();
+  }
+
+  public void setBallsInMag(int set) {
+    ballCount = set;
+  }
+
+  public void resetBallCount() {
+    setBallsInMag(0);
+  }
+
+  public boolean getInvalidBallCount() {
+    return invalidBallCount;
+  }
+  
+  //might be temporary
+  public int countBall() {
+    if (getInBall()) {
+      ballIn = true;
+    } else if (!getInBall() && ballIn) {
+      ballIn = false;
+      ballCount += 1;
+    } else if (getOutBall()) {
+     ballOut = true;
+    } else if (!getOutBall() && ballOut) {
+      ballOut = false;
+      ballCount -= 1;
+    }
+    if (ballCount < 0 || ballCount > 3) {
+      System.out.println("INVALID BALL COUNT");
+      invalidBallCount = true;
+    } else {
+      invalidBallCount = false;
+    }
+    return ballCount;
   }
 
   @Override
   public void periodic() {
-    m_networkTable.getEntry("Photo eye").setBoolean(getBallInQueue()[0]);
-    m_networkTable.getEntry("Photo eye").setBoolean(getBallInQueue()[1]);
-    m_networkTable.getEntry("Photo eye").setBoolean(getBallInQueue()[2]);
-    m_networkTable.getEntry("Photo eye").setBoolean(getBallInQueue()[3]);
-  }
-
-  public boolean[] getBallInQueue() {
-    boolean[] getBall = {};
-    getBall[0] = !m_photoEye1.getDetected();
-    getBall[1] = !m_photoEye2.getDetected();
-    getBall[2] = !m_photoEye3.getDetected();
-    getBall[3] = !m_photoEye4.getDetected();
-    return getBall;
+    countBall();
+    SmartDashboard.putNumber("balls in mag", countBall());
+    SmartDashboard.putBoolean("invalid ball count", getInvalidBallCount());
   }
 }
