@@ -3,12 +3,13 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.sensors.PhotoEye;
 
 public class PhotoEyeSubsystem extends SubsystemBase {
-  private final int m_photoeye1ID = -1;
-  private final int m_photoeye2ID = -1;
-  private DigitalInput m_photoeye1;
-  private DigitalInput m_photoeye2;
+  private final int m_photoeye1ID = 0;
+  private final int m_photoeye2ID = 1;
+  private final PhotoEye m_photoeye1;
+  private final PhotoEye m_photoeye2;
   
   //these are for the ball counter
   private int ballCount;
@@ -20,8 +21,8 @@ public class PhotoEyeSubsystem extends SubsystemBase {
    * Creates a new PowerCellManager.
    */
   public PhotoEyeSubsystem() {
-    m_photoeye1 = new DigitalInput(m_photoeye1ID);
-    m_photoeye2 = new DigitalInput(m_photoeye2ID);
+    m_photoeye1 = new PhotoEye(m_photoeye1ID);
+    m_photoeye2 = new PhotoEye(m_photoeye2ID);
     
     ballCount = 0;
     ballIn = false;
@@ -30,11 +31,11 @@ public class PhotoEyeSubsystem extends SubsystemBase {
   }
   
   public boolean getInBall() {
-    return !m_photoeye1.get();
+    return !m_photoeye1.getDetected();
   }
 
   public boolean getOutBall() {
-    return !m_photoeye2.get();
+    return !m_photoeye2.getDetected();
   }
 
   public void setBallsInMag(int set) {
@@ -63,7 +64,6 @@ public class PhotoEyeSubsystem extends SubsystemBase {
       ballCount -= 1;
     }
     if (ballCount < 0 || ballCount > 3) {
-      System.out.println("INVALID BALL COUNT");
       invalidBallCount = true;
     } else {
       invalidBallCount = false;
@@ -71,10 +71,16 @@ public class PhotoEyeSubsystem extends SubsystemBase {
     return ballCount;
   }
 
+  public void updateBall() {
+    countBall();
+    SmartDashboard.putNumber("balls in magazine", countBall());
+    SmartDashboard.putBoolean("invalid ball count", getInvalidBallCount());
+    if (getInvalidBallCount()) {
+      System.out.println("INVALID BALL COUNT");
+    }
+  }
+
   @Override
   public void periodic() {
-    countBall();
-    SmartDashboard.putNumber("balls in mag", countBall());
-    SmartDashboard.putBoolean("invalid ball count", getInvalidBallCount());
   }
 }

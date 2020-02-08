@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
  * Wrapper class for photo switches
  */
 public class PhotoEye {
-  private final DigitalInput m_digitalIn;
+  private DigitalInput m_digitalIn;
 
   public PhotoEye(int port) {
     m_digitalIn = new DigitalInput(port);
