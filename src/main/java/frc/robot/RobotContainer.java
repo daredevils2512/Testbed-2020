@@ -15,6 +15,7 @@ import frc.robot.commands.Commands;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.drivetrain.AtlasDrivetrain;
+import frc.robot.utils.HexagonPosition;
 import frc.robot.vision.Limelight;
 import frc.robot.vision.Limelight.Pipeline;
 
@@ -26,16 +27,21 @@ import frc.robot.vision.Limelight.Pipeline;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private final ControlBoard m_controlBoard = new ControlBoard();
+
   @SuppressWarnings("unused")
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
 
-  private final ControlBoard m_controlBoard = new ControlBoard();
+  public final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
+  public final Limelight m_hexagonLimelight = new Limelight(Pipeline.Hexagon2d);
+  
   private final AtlasDrivetrain m_atlasDrivetrain = new AtlasDrivetrain();
   private final Turret m_turret = new Turret();
   
-  private final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
+  public final HexagonPosition m_hexagonPosition = new HexagonPosition(m_atlasDrivetrain, m_turret, m_hexagonLimelight);
 
-  private final Command m_autoCommand;
+  private final Command m_autoCommand;  
+
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -43,6 +49,7 @@ public class RobotContainer {
   public RobotContainer() {
     m_atlasDrivetrain.setDefaultCommand(Commands.velocityArcadeDrive(m_atlasDrivetrain, m_controlBoard.xbox::getLeftStickY, m_controlBoard.xbox::getRightStickX));
     m_turret.setDefaultCommand(Commands.runTurret(m_turret, m_controlBoard.extreme::getStickX));
+
     configureButtonBindings();
 
     m_autoCommand = null;
@@ -60,8 +67,10 @@ public class RobotContainer {
     m_controlBoard.xbox.xButton.whenPressed(Commands.turnToAngle(m_atlasDrivetrain, 0, 1));
 
     m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
+    // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
 
     m_controlBoard.xbox.yButton.whenPressed(Commands.resetTurret(m_turret));
+    m_controlBoard.extreme.trigger.toggleWhenPressed(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter
   }
 
   /**

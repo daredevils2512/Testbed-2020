@@ -19,7 +19,8 @@ public class Limelight {
     //table is the table name without the limelight- infromt of it. this also means which physical limelight it is
     PowerCellsLimelight(1, "balls"),
     PowerCells(0, "balls"),
-    HexagonThing3d(2, "balls", 21, 7.34, 0); //inches. pipeline id is for testing on the old limelight
+    HexagonThing3d(2, "balls", 21, 7.34, 0), //inches. pipeline id is for testing on the old limelight
+    Hexagon2d(3, "balls", 0, 5, 0);
 
     private int m_id;
     private String m_table;
@@ -107,7 +108,7 @@ public class Limelight {
   }
 
   public double getLastPosition() {
-    if (tx() != 0) { 
+    if (tx() != 0.00 || hasTarget()) { 
       lastPostion = tx(); 
     }
     return lastPostion;

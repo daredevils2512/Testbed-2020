@@ -65,6 +65,7 @@ public class Drivetrain extends SubsystemBase {
 
     m_pigeon = new PigeonIMU(m_pigeonID);
     m_pigeon.configFactoryDefault();
+    m_pigeon.setYaw(0.0);
 
     resetEncoders();
     setHeading(0);
@@ -83,6 +84,8 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("yaw", getYaw());
     SmartDashboard.putNumber("pitch", getPitch());
     SmartDashboard.putNumber("roll", getRoll());
+    SmartDashboard.putNumber("heading", getHeading());
+    updateGyroData();
   }
 
   public int getLeftEncoderTicks() {
@@ -131,6 +134,10 @@ public class Drivetrain extends SubsystemBase {
 
   public double getRoll() {
     return m_gyroData[2];
+  }
+
+  public double getHeading() {
+    return -(getYaw() % 360);
   }
 
   /**

@@ -62,10 +62,10 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   private final PIDController m_leftPIDController;
   private final PIDController m_rightPIDController;
 
-  private final double m_leftPGain = 0.5;
+  private final double m_leftPGain = 0;
   private final double m_leftIGain = 0;
   private final double m_leftDGain = 0;
-  private final double m_rightPGain = 0.5;
+  private final double m_rightPGain = 0;
   private final double m_rightIGain = 0;
   private final double m_rightDGain = 0;
 
@@ -74,8 +74,8 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
   private final double m_wheelDiameter = Units.inchesToMeters(4); // Diameter in meters
   private final double m_trackWidth = 0.67; // Width in meters
-  private final double m_staticGain = 1;
-  private final double m_velocityGain = 2;
+  private final double m_staticGain = 0.35; // Guess based on Alea tuning
+  private final double m_velocityGain = 9; // Guess based on Alea tuning
   private final int m_encoderResolution = 128; // Ticks per revolution
 
   private double[] m_gyroData = new double[3]; // Yaw, pitch, roll set by the pigeon
@@ -159,7 +159,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
   @Override
   public double getHeading() {
-    return m_gyroData[0];
+    return -1 * (m_gyroData[0] % 360);
   }
 
   @Override

@@ -9,6 +9,7 @@ import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
 import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 import frc.robot.subsystems.drivetrain.PIDDrivetrain;
 import frc.robot.subsystems.drivetrain.SimpleDrivetrain;
+import frc.robot.vision.Limelight;
 
 public class Commands {
   private Commands() {
@@ -45,5 +46,9 @@ public class Commands {
 
   public static Command resetTurret(Turret turret) {
     return new RunCommand(() -> turret.resetEncoder(), turret);
+  }
+
+  public static Command findTarget(Turret turret, Limelight limelight, double tolerance) {
+    return new FindTarget(turret, limelight, tolerance);
   }
 }
