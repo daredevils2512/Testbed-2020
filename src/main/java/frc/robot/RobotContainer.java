@@ -10,10 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.controlboard.ControlBoard;
+import frc.robot.controlboard.Extreme;
 import frc.robot.subsystems.PIDDrivetrain;
-import frc.robot.vision.Limelight;
-import frc.robot.vision.Limelight.Pipeline;
+import frc.robot.vision.Pipeline;
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
@@ -24,22 +23,18 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final ControlBoard m_controlBoard = new ControlBoard();
+  private final Extreme m_extreme = new Extreme(0);
+
+  // @SuppressWarnings("unused")
+  // private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
   private final PIDDrivetrain m_pidDrivetrain = new PIDDrivetrain();
 
-  @SuppressWarnings("unused")
-  private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
-  
-  private final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
-  
   private final Command m_autoCommand;
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_pidDrivetrain.setDefaultCommand(new PIDDrive(m_pidDrivetrain, m_controlBoard.xbox::getLeftStickY, m_controlBoard.xbox::getRightStickX));
-
     configureButtonBindings();
 
     m_autoCommand = null;
@@ -52,12 +47,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_powerCellLimelight, Pipeline.PowerCells));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_powerCellLimelight, Pipeline.PowerCellsLimelight));
-    m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_pidDrivetrain, 1.0, 0.0));
-
-    // Turn to 0 degrees
-    m_controlBoard.xbox.xButton.whenPressed(Commands.turnToAngle(m_pidDrivetrain, 0));
+    m_extreme.trigger.whileHeld(new FollowBall(m_pidDrivetrain, Pipeline.POWER_CELLS));
   }
 
   /**
