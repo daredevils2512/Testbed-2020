@@ -75,4 +75,16 @@ public class Extreme {
   public double getStickRotation(double deadband) {
     return deadband(getStickRotation(), deadband);
   }
+
+  public double getPOVDirection() {
+    return m_joystick.getPOV();
+  }
+
+  public double getPOVX() {
+    return Math.sin(Math.toRadians(getPOVDirection()));
+  }
+
+  public double getPOVY() {
+    return Math.cos(Math.toRadians(getPOVDirection()));
+  }
 }

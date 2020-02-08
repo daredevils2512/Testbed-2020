@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.Commands;
 import frc.robot.controlboard.ControlBoard;
+import frc.robot.controlboard.Extreme;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.drivetrain.AtlasDrivetrain;
 import frc.robot.utils.HexagonPosition;
@@ -27,10 +28,10 @@ import frc.robot.vision.Limelight.Pipeline;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final ControlBoard m_controlBoard = new ControlBoard();
+  private final Extreme m_extreme = new Extreme(0);
 
-  @SuppressWarnings("unused")
-  private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  // @SuppressWarnings("unused")
+  // private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
 
   public final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
   public final Limelight m_hexagonLimelight = new Limelight(Pipeline.Hexagon2d);
@@ -47,8 +48,13 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_atlasDrivetrain.setDefaultCommand(Commands.velocityArcadeDrive(m_atlasDrivetrain, m_controlBoard.xbox::getLeftStickY, m_controlBoard.xbox::getRightStickX));
-    m_turret.setDefaultCommand(Commands.runTurret(m_turret, m_controlBoard.extreme::getStickX));
+    m_atlasDrivetrain.setDefaultCommand(Commands.velocityArcadeDrive(
+      m_atlasDrivetrain,
+      () -> -m_extreme.getStickY(0.3),
+      () -> m_extreme.getStickRotation(0.3)));
+    m_turret.setDefaultCommand(Commands.runTurret(
+      m_turret,
+      () -> m_extreme.getPOVX()));
 
     configureButtonBindings();
 
@@ -62,15 +68,11 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
-    // Turn to 0 degrees
-    m_controlBoard.xbox.xButton.whenPressed(Commands.turnToAngle(m_atlasDrivetrain, 0, 1));
-
-    m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
+    m_extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
     // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
 
-    m_controlBoard.xbox.yButton.whenPressed(Commands.resetTurret(m_turret));
-    m_controlBoard.extreme.trigger.toggleWhenPressed(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter
+    m_extreme.sideButton.whenPressed(Commands.resetTurret(m_turret));
+    m_extreme.trigger.toggleWhenPressed(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter
   }
 
   /**
