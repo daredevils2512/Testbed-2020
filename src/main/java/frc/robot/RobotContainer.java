@@ -70,7 +70,7 @@ public class RobotContainer {
     // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
 
     m_controlBoard.xbox.yButton.whenPressed(Commands.resetTurret(m_turret));
-    m_controlBoard.extreme.trigger.whileHeld(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter
+    m_controlBoard.extreme.trigger.toggleWhenPressed(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter
   }
 
   /**

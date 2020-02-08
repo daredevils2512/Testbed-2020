@@ -22,6 +22,7 @@ public class Turret extends SubsystemBase {
   private final double m_gearRatio = 22.0 / 129.0;
 
   private final double m_maxTurnDegrees = 180;
+  private final double m_tolerance = 5;
 
   // TODO: Tune position PID
   private final int m_positionSlot = 0;
@@ -29,7 +30,7 @@ public class Turret extends SubsystemBase {
   private double m_I = 0;
   private double m_D = 35;
   private int m_motionAcceleration = 2000;
-  private int m_motionCruiseVelocity = 2000;
+  private int m_motionCruiseVelocity = 4000;
 
   /**
    * Creates a new turret
@@ -54,14 +55,14 @@ public class Turret extends SubsystemBase {
     m_turretMaster.set(ControlMode.PercentOutput, 0);
     m_turretMaster.setSelectedSensorPosition(0);
 
-    m_networkTable.getEntry("P gain").setNumber(m_P);
-    m_networkTable.getEntry("I gain").setNumber(m_I);
-    m_networkTable.getEntry("D gain").setNumber(m_D);
-
     m_turretMaster.configForwardSoftLimitThreshold(toEncoderPulses(m_maxTurnDegrees));
     m_turretMaster.configReverseSoftLimitThreshold(toEncoderPulses(-m_maxTurnDegrees));
     m_turretMaster.configForwardSoftLimitEnable(true);
     m_turretMaster.configReverseSoftLimitEnable(true);
+
+    m_networkTable.getEntry("P gain").setNumber(m_P);
+    m_networkTable.getEntry("I gain").setNumber(m_I);
+    m_networkTable.getEntry("D gain").setNumber(m_D);
   }
 
   @Override
@@ -101,8 +102,10 @@ public class Turret extends SubsystemBase {
   }
 
   public void runPosition(double degrees) {
-    m_turretMaster.set(ControlMode.MotionMagic, 
-      toEncoderPulses(wrapDegrees(degrees)));
+    if (Math.abs(getAngle() - degrees) >= m_tolerance) {
+      m_turretMaster.set(ControlMode.MotionMagic, 
+        toEncoderPulses(wrapDegrees(degrees)));
+    }
   }
 
   public double wrapDegrees(double degrees) {

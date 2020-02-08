@@ -61,6 +61,7 @@ public class FindTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(m_networkTable.getEntry("turret relative position").getDouble(m_turret.getAngle()) - m_turret.getAngle()) <= m_tolerance);
+    // return (Math.abs(m_networkTable.getEntry("turret relative position").getDouble(m_turret.getAngle()) - m_turret.getAngle()) <= m_tolerance);
+    return false;
   }
 }

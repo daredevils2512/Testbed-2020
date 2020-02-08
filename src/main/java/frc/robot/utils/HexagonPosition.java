@@ -23,7 +23,8 @@ public class HexagonPosition {
     private final Limelight m_limelight;
     private final NetworkTable m_networkTable;
 
-    private double m_position;
+    private double m_turretPosition;
+    private double m_robotPosition;
 
     public HexagonPosition(Drivetrain drivetrain, Turret turret, Limelight limelight) {
         m_drivetrain = drivetrain;
@@ -32,23 +33,22 @@ public class HexagonPosition {
         m_networkTable = NetworkTableInstance.getDefault().getTable("hexagon position");
     }
 
-    private double calculatePosition() {
-        m_position = m_limelight.hasTarget() ? m_turret.getAngle() + m_limelight.getLastPosition() : m_position;
-        m_position = m_position + (m_drivetrain.getHeading() - 180);
-        return m_position;
+    private void calculatePosition() {
+        m_turretPosition = m_limelight.hasTarget() ? m_turret.getAngle() + m_limelight.getLastPosition() : m_turretPosition;
+        m_robotPosition = m_limelight.hasTarget() ? (m_drivetrain.getHeading()) + m_limelight.getLastPosition() + m_turret.getAngle() : m_robotPosition;
     }
 
     public void updatePosition() {
-        SmartDashboard.putNumber("hexagon position", calculatePosition());
+        calculatePosition();
         m_networkTable.getEntry("robot relative position").setDouble(getRobotRelativePosition());
         m_networkTable.getEntry("turret relative position").setDouble(getTurretRelativePosition());
     }
-
+    
     private double getRobotRelativePosition() {
-        return calculatePosition();
+        return m_robotPosition;
     }
 
     private double getTurretRelativePosition() {
-        return calculatePosition() - (m_drivetrain.getHeading() - 180);
+        return m_robotPosition - m_drivetrain.getHeading();
     }
 }
