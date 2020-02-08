@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * mounted to the output of the gearbox for distance calculation,
  * and a {@link PigeonIMU} for heading calculation.
  */
-public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrain, OdometryDrivetrain {
+public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrain {
   /**
    * All network table enties are stored as variables so they can be referenced
    * more reliably (instead of by name via string)
@@ -50,10 +50,10 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
   private final NetworkTableEntry m_rightIGainEntry;
   private final NetworkTableEntry m_rightDGainEntry;
   public final NetworkTableEntry m_invertedDrivingEntry;
-  public final NetworkTableEntry m_lowGearEntry;
-  public final NetworkTableEntry m_yawEntry;
-  public final NetworkTableEntry m_pitchEntry;
-  public final NetworkTableEntry m_rollEntry;
+  // public final NetworkTableEntry m_lowGearEntry;
+  // public final NetworkTableEntry m_yawEntry;
+  // public final NetworkTableEntry m_pitchEntry;
+  // public final NetworkTableEntry m_rollEntry;
 
   private final int m_leftDriveMasterID = 10;
   private final int m_leftDriveFollowerID = 11;
@@ -73,14 +73,14 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
   private final Encoder m_leftEncoder;
   private final Encoder m_rightEncoder;
 
-  private final int m_pigeonID = 14;
-  private final PigeonIMU m_pigeon;
+  // private final int m_pigeonID = 14;
+  // private final PigeonIMU m_pigeon;
 
-  private final int m_shifterForwardChannel = -1;
-  private final int m_shifterReverseChannel = -1;
-  private final DoubleSolenoid m_shifter;
-  private final DoubleSolenoid.Value m_highGearValue = Value.kForward;
-  private final DoubleSolenoid.Value m_lowGearValue = Value.kReverse;
+  // private final int m_shifterForwardChannel = -1;
+  // private final int m_shifterReverseChannel = -1;
+  // private final DoubleSolenoid m_shifter;
+  // private final DoubleSolenoid.Value m_highGearValue = Value.kForward;
+  // private final DoubleSolenoid.Value m_lowGearValue = Value.kReverse;
 
   private final int m_encoderResolution = 256;
   private final double m_gearRatio = 3 / 1;
@@ -96,10 +96,10 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
 
   private boolean m_isDrivingInverted = false;
 
-  private double[] m_gyroData = new double[3]; // Yaw, pitch, and roll in degrees
+  // private double[] m_gyroData = new double[3]; // Yaw, pitch, and roll in degrees
 
   private final DifferentialDriveKinematics m_kinematics;
-  private final DifferentialDriveOdometry m_odometry;
+  // private final DifferentialDriveOdometry m_odometry;
   // TODO: Tune feedforward values using the characterization tool
   private final SimpleMotorFeedforward m_driveMotorFeedforward = new SimpleMotorFeedforward(1, 3);
   private final PIDController m_leftPIDController;
@@ -124,10 +124,10 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
     m_rightIGainEntry = m_networkTable.getEntry("Right I gain");
     m_rightDGainEntry = m_networkTable.getEntry("Right D gain");
     m_invertedDrivingEntry = m_networkTable.getEntry("Inverted driving");
-    m_lowGearEntry = m_networkTable.getEntry("Low gear");
-    m_yawEntry = m_networkTable.getEntry("Yaw");
-    m_pitchEntry = m_networkTable.getEntry("Pitch");
-    m_rollEntry = m_networkTable.getEntry("Roll");
+    // m_lowGearEntry = m_networkTable.getEntry("Low gear");
+    // m_yawEntry = m_networkTable.getEntry("Yaw");
+    // m_pitchEntry = m_networkTable.getEntry("Pitch");
+    // m_rollEntry = m_networkTable.getEntry("Roll");
 
     m_leftDriveMaster = new WPI_TalonFX(m_leftDriveMasterID);
     m_leftDriveFollower = new WPI_TalonFX(m_leftDriveFollowerID);
@@ -154,14 +154,14 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
     m_leftEncoder.setDistancePerPulse(m_wheelDiameter * Math.PI * m_gearRatio / m_encoderResolution);
     m_rightEncoder.setDistancePerPulse(m_wheelDiameter * Math.PI * m_gearRatio / m_encoderResolution);
 
-    m_pigeon = new PigeonIMU(m_pigeonID);
-    m_pigeon.configFactoryDefault();
-    m_pigeon.setFusedHeading(0);
+    // m_pigeon = new PigeonIMU(m_pigeonID);
+    // m_pigeon.configFactoryDefault();
+    // m_pigeon.setFusedHeading(0);
 
-    m_shifter = new DoubleSolenoid(m_shifterForwardChannel, m_shifterReverseChannel);
+    // m_shifter = new DoubleSolenoid(m_shifterForwardChannel, m_shifterReverseChannel);
 
     m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
-    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getYaw()));
+    // m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getYaw()));
     m_leftPIDController = new PIDController(m_leftPGain, m_leftIGain, m_leftDGain);
     m_rightPIDController = new PIDController(m_rightPGain, m_rightIGain, m_rightDGain);
   }
@@ -178,8 +178,8 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
     m_leftPIDController.setPID(m_leftPGain, m_leftIGain, m_leftDGain);
     m_rightPIDController.setPID(m_rightPGain, m_rightIGain, m_rightDGain);
 
-    updateGyroData();
-    updateOdometry();
+    // updateGyroData();
+    // updateOdometry();
 
     m_leftPGainEntry.setNumber(m_leftPGain);
     m_leftIGainEntry.setNumber(m_leftIGain);
@@ -189,10 +189,10 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
     m_rightDGainEntry.setNumber(m_leftDGain);
 
     m_invertedDrivingEntry.setBoolean(m_isDrivingInverted);
-    m_lowGearEntry.setBoolean(getLowGear());
-    m_yawEntry.setNumber(getYaw());
-    m_pitchEntry.setNumber(getPitch());
-    m_rollEntry.setNumber(getRoll());
+    // m_lowGearEntry.setBoolean(getLowGear());
+    // m_yawEntry.setNumber(getYaw());
+    // m_pitchEntry.setNumber(getPitch());
+    // m_rollEntry.setNumber(getRoll());
   }
 
   @Override
@@ -229,16 +229,17 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
    * @return Speed in meters per second
    */
   public double getMaxSpeed() {
-    return getLowGear() ? m_maxSpeedLowGear : m_maxSpeedHighGear;
+    // return getLowGear() ? m_maxSpeedLowGear : m_maxSpeedHighGear;
+    return 1;
   }
 
-  public void setLowGear(final boolean wantsLowGear) {
-    m_shifter.set(wantsLowGear ? m_lowGearValue : m_highGearValue);
-  }
+  // public void setLowGear(final boolean wantsLowGear) {
+  //   m_shifter.set(wantsLowGear ? m_lowGearValue : m_highGearValue);
+  // }
 
-  public boolean getLowGear() {
-    return m_shifter.get() == m_lowGearValue;
-  }
+  // public boolean getLowGear() {
+  //   return m_shifter.get() == m_lowGearValue;
+  // }
 
   public void resetDriveEncoders() {
     m_leftEncoder.reset();
@@ -248,44 +249,44 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
   /**
    * Must be called periodically to retrieve gyro data from the {@link PigeonIMU}
    */
-  private void updateGyroData() {
-    m_pigeon.getYawPitchRoll(m_gyroData);
-  }
+  // private void updateGyroData() {
+  //   m_pigeon.getYawPitchRoll(m_gyroData);
+  // }
 
-  public double getYaw() {
-    return m_gyroData[0];
-  }
+  // public double getYaw() {
+  //   return m_gyroData[0];
+  // }
 
-  public double getPitch() {
-    return m_gyroData[1];
-  }
+  // public double getPitch() {
+  //   return m_gyroData[1];
+  // }
 
-  public double getRoll() {
-    return m_gyroData[2];
-  }
+  // public double getRoll() {
+  //   return m_gyroData[2];
+  // }
 
   /**
    * Set a new heading for the drivetrain
    * @param angle
    */
-  public void setHeading(double angle) {
-    m_pigeon.setFusedHeading(angle);
-  }
+  // public void setHeading(double angle) {
+  //   m_pigeon.setFusedHeading(angle);
+  // }
 
   /**
    * Must be called periodically to maintain an accurate position and heading
    */
-  private void updateOdometry() {
-    m_odometry.update(Rotation2d.fromDegrees(getYaw()), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
-  }
+  // private void updateOdometry() {
+  //   m_odometry.update(Rotation2d.fromDegrees(getYaw()), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+  // }
 
   /**
    * Get the current pose (rotation and translation) of the robot
    * @return Pose with translation in meters
    */
-  public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
-  }
+  // public Pose2d getPose() {
+  //   return m_odometry.getPoseMeters();
+  // }
 
   @Override
   public double getLeftDistance() {
@@ -306,23 +307,34 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
     return m_rightEncoder.getRate();
   }
 
-  @Override
-  public double getHeading() {
-    return m_pigeon.getFusedHeading();
-  }
+  // @Override
+  // public double getHeading() {
+  //   return m_pigeon.getFusedHeading();
+  // }
 
-  @Override
-  public void resetHeading() {
-    resetHeading();
-  }
+  // @Override
+  // public void resetHeading() {
+  //   resetHeading();
+  // }
 
-  @Override
-  public void resetPose() {
-    m_odometry.resetPosition(getPose(), Rotation2d.fromDegrees(0));
-  }
+  // @Override
+  // public void resetPose() {
+  //   m_odometry.resetPosition(getPose(), Rotation2d.fromDegrees(0));
+  // }
 
   @Override
   public double getMaxAngularSpeed() {
-    return getLowGear() ? m_maxAngularSpeedLow : m_maxAngularSpeedHigh;
+    // return getLowGear() ? m_maxAngularSpeedLow : m_maxAngularSpeedHigh;
+    return 1;
+  }
+
+  @Override
+  public void driveLeft(double speed) {
+    m_leftDriveMaster.set(speed);
+  }
+
+  @Override
+  public void driveRight(double speed) {
+    m_rightDriveMaster.set(speed);
   }
 }
