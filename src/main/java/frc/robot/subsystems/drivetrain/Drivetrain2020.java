@@ -309,7 +309,7 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
 
   @Override
   public double getHeading() {
-    return m_pigeon.getFusedHeading();
+    return m_pigeon.getFusedHeading() % 360;
   }
 
   @Override
@@ -319,7 +319,14 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
 
   @Override
   public void resetPose() {
-    m_odometry.resetPosition(getPose(), Rotation2d.fromDegrees(0));
+    resetDriveEncoders();
+    resetHeading();
+    m_odometry.resetPosition(getPose(), Rotation2d.fromDegrees(getHeading()));
+  }
+
+  @Override
+  public void resetPose(Pose2d newPose) {
+    m_odometry.resetPosition(newPose, Rotation2d.fromDegrees(getHeading()));
   }
 
   @Override

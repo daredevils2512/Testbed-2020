@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.Commands;
-import frc.robot.controlboard.ControlBoard;
 import frc.robot.controlboard.Extreme;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.drivetrain.AtlasDrivetrain;
@@ -43,7 +42,6 @@ public class RobotContainer {
 
   private final Command m_autoCommand;  
 
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -68,6 +66,8 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    m_extreme.baseFrontLeft.whenPressed(Commands.resetPose(m_atlasDrivetrain));
+
     m_extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
     // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
 

@@ -3,8 +3,11 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.drivetrain.EncoderDrivetrain;
+import frc.robot.subsystems.drivetrain.GyroDrivetrain;
 import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
 import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 import frc.robot.subsystems.drivetrain.PIDDrivetrain;
@@ -34,6 +37,18 @@ public class Commands {
 
   public static <T extends KinematicsDrivetrain & OdometryDrivetrain> Command driveStaight(T drivetrain, double distance, double maxSpeed, double maxAngularSpeed) {
     return new DriveStraight<T>(drivetrain, distance, maxSpeed, maxAngularSpeed);
+  }
+  
+  public static Command resetEncoders(EncoderDrivetrain drivetrain) {
+    return new InstantCommand(() -> drivetrain.resetDriveEncoders(), drivetrain);
+  }
+
+  public static Command resetHeading(GyroDrivetrain drivetrain) {
+    return new InstantCommand(() -> drivetrain.resetHeading(), drivetrain);
+  }
+
+  public static Command resetPose(OdometryDrivetrain drivetrain) {
+    return new InstantCommand(() -> drivetrain.resetPose());
   }
 
   public static Command runTurret(Turret turret, DoubleSupplier turnSupplier) {
