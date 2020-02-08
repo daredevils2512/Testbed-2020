@@ -91,6 +91,10 @@ public class Intake2020 extends SubsystemBase {
     m_motionMagicEnabled = wantsEnabled;
   }
 
+  public void toggleMotionMagic() {
+    setMotionMagicEnabled(!m_motionMagicEnabled);
+  }
+
   public boolean getExtended() {
     return m_extended;
   }

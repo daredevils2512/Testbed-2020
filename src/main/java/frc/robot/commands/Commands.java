@@ -132,4 +132,8 @@ public class Commands {
   public static Command runExtender(Intake2020 intake, double speed) {
     return new RunCommand(() -> intake.runExtender(speed), intake);
   }
+
+  public static Command toggleUseMotionMagic(Intake2020 intake) {
+    return new RunCommand(() -> intake.toggleMotionMagic(), intake);
+  }
 }

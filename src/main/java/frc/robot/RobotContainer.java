@@ -50,6 +50,7 @@ public class RobotContainer {
     m_controlBoard.extreme.baseBackRight.whenHeld(Commands.runIntake(m_intake, -1.0));
     m_controlBoard.extreme.baseMiddleLeft.whenHeld(Commands.runExtender(m_intake, 0.5));
     m_controlBoard.extreme.baseMiddleRight.whenHeld(Commands.runExtender(m_intake, -0.5));
+    m_controlBoard.extreme.joystickBottomLeft.whenPressed(Commands.toggleUseMotionMagic(m_intake));
   }
 
   /**
