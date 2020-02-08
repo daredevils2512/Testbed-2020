@@ -49,7 +49,7 @@ public class Extreme {
   }
 
   private double deadband(double value, double deadband) {
-    return Math.abs(value) < deadband ? 0 : value;
+    return Math.abs(value) < deadband ? 0 : value - 1;
   }
 
   public double getStickX(double deadband) {
