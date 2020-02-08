@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.Commands;
+import frc.robot.controlboard.Extreme;
+import frc.robot.subsystems.drivetrain.AleaDrivetrain;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -20,8 +23,11 @@ import edu.wpi.first.wpilibj2.command.Command;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private final Extreme m_extreme = new Extreme(0);
+
   @SuppressWarnings("unused")
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  private final AleaDrivetrain m_aleaDrivetrain = new AleaDrivetrain();
 
   private final Command m_autoCommand;
 
@@ -29,6 +35,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    m_aleaDrivetrain.setDefaultCommand(Commands.simpleArcadeDrive(m_aleaDrivetrain, () -> getMove(), () -> getTurn()));
     configureButtonBindings();
 
     m_autoCommand = null;
@@ -51,5 +58,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return m_autoCommand;
+  }
+
+  public double getMove() {
+    return -m_extreme.getStickY(0.3);
+  }
+
+  public double getTurn() {
+    return m_extreme.getStickRotation(0.3);
   }
 }

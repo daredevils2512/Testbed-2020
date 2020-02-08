@@ -52,21 +52,22 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
 
   private final double m_wheelDiameter = Units.inchesToMeters(4); // Diameter in meters
   private final double m_wheelCircumference = Math.PI * m_wheelDiameter;
-  private final double m_gearRatio = 8 / 1; // Gearing between encoders and wheels
+  private final double m_gearRatio = (double)1 / 8; // Gearing between encoders and wheels
   private final double m_trackWidth = 0.67; // Width in meters
   private final int m_encoderResolution = 128; // Pulses per revolution
-  private final double m_staticGain = 2;
-  private final double m_velocityGain = 1;
+  private final double m_staticGain = 0.353; // Tuned on elevated drivetrain
+  private final double m_velocityGain = 9.02; // Tuned on elevated drivetrain
+  private final double m_accelerationGain = -0.0943; // Tuned on elevated drivetrain
 
   private final DifferentialDriveKinematics m_kinematics;
   private final SimpleMotorFeedforward m_feedforward;
   private final PIDController m_leftVelocityController;
   private final PIDController m_rightVelocityController;
 
-  private final double m_leftPGain = 0.8;
+  private final double m_leftPGain = 0;
   private final double m_leftIGain = 0;
   private final double m_leftDGain = 0;
-  private final double m_rightPGain = 0.8;
+  private final double m_rightPGain = 0;
   private final double m_rightIGain = 0;
   private final double m_rightDGain = 0;
 
@@ -110,7 +111,7 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
     m_rightEncoder.setReverseDirection(true);
 
     m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
-    m_feedforward = new SimpleMotorFeedforward(m_staticGain, m_velocityGain);
+    m_feedforward = new SimpleMotorFeedforward(m_staticGain, m_velocityGain, m_accelerationGain);
     m_leftVelocityController = new PIDController(m_leftPGain, m_leftIGain, m_leftDGain);
     m_rightVelocityController = new PIDController(m_rightPGain, m_rightIGain, m_rightDGain);
   }
