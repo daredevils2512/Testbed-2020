@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.FalconTest;
+import frc.robot.subsystems.Intake2020;
 import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
 import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 import frc.robot.subsystems.drivetrain.SimpleDrivetrain;
@@ -122,5 +123,13 @@ public class Commands {
 
   public static <T extends KinematicsDrivetrain & OdometryDrivetrain> Command driveStaight(T drivetrain, double distance, double maxSpeed, double maxAngularSpeed) {
     return new DriveStraight<T>(drivetrain, distance, maxSpeed, maxAngularSpeed);
+  }
+
+  public static Command runIntake(Intake2020 intake, double speed) {
+    return new RunCommand(() -> intake.run(speed), intake);
+  }
+
+  public static Command runExtender(Intake2020 intake, double speed) {
+    return new RunCommand(() -> intake.runExtender(speed), intake);
   }
 }

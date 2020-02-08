@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Intake2020;
+import frc.robot.commands.Commands;
+import frc.robot.controlboard.ControlBoard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -22,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   @SuppressWarnings("unused")
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  private final Intake2020 m_intake = new Intake2020();
+  private final ControlBoard m_controlBoard = new ControlBoard();
 
   private final Command m_autoCommand;
 
@@ -41,7 +46,10 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
+    m_controlBoard.extreme.baseBackLeft.whenHeld(Commands.runIntake(m_intake, 1.0));
+    m_controlBoard.extreme.baseBackRight.whenHeld(Commands.runIntake(m_intake, -1.0));
+    m_controlBoard.extreme.baseMiddleLeft.whenHeld(Commands.runExtender(m_intake, 0.5));
+    m_controlBoard.extreme.baseMiddleRight.whenHeld(Commands.runExtender(m_intake, -0.5));
   }
 
   /**
