@@ -61,8 +61,6 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_controlBoard.xbox.rightBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_powerCellLimelight, Pipeline.PowerCells));
-    m_controlBoard.xbox.leftBumper.whileHeld(new FollowBall(m_pidDrivetrain, m_powerCellLimelight, Pipeline.PowerCellsLimelight));
     m_controlBoard.xbox.aButton.whenPressed(Commands.pidDrive(m_pidDrivetrain, 1.0, 0.0));
 
     // Turn to 0 degrees
