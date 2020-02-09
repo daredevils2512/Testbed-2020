@@ -10,6 +10,7 @@ package frc.robot.subsystems.drivetrain;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -17,14 +18,17 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
-public final class AleaDrivetrain extends SubsystemBase implements KinematicsDrivetrain {
+public final class AleaDrivetrain extends SubsystemBase implements KinematicsDrivetrain, OdometryDrivetrain {
   private final NetworkTable m_networkTable;
   private final NetworkTableEntry m_leftDistanceEntry;
   private final NetworkTableEntry m_rightDistanceEntry;
@@ -32,6 +36,12 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
   private final NetworkTableEntry m_rightVelocityEntry;
   private final NetworkTableEntry m_leftVelocityErrorEntry;
   private final NetworkTableEntry m_rightVelocityErrorEntry;
+  private final NetworkTableEntry m_yawEntry;
+  private final NetworkTableEntry m_pitchEntry;
+  private final NetworkTableEntry m_rollEntry;
+  private final NetworkTableEntry m_xPositionEntry;
+  private final NetworkTableEntry m_yPositionEntry;
+  private final NetworkTableEntry m_headingEntry;
 
   private final int m_leftDriveMasterID = 10;
   private final int m_leftDriveFollowerID = 11;
@@ -50,6 +60,7 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
   private final Encoder m_leftEncoder;
   private final Encoder m_rightEncoder;
 
+  private final double m_distancePerTickApprox = 0.0006; // Distance in meters
   private final double m_wheelDiameter = Units.inchesToMeters(4); // Diameter in meters
   private final double m_wheelCircumference = Math.PI * m_wheelDiameter;
   private final double m_gearRatio = (double)1 / 8; // Gearing between encoders and wheels
@@ -59,10 +70,14 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
   private final double m_velocityGain = 9.02; // Tuned on elevated drivetrain
   private final double m_accelerationGain = -0.0943; // Tuned on elevated drivetrain
 
+  private final AHRS m_ahrs;
+
   private final DifferentialDriveKinematics m_kinematics;
   private final SimpleMotorFeedforward m_feedforward;
   private final PIDController m_leftVelocityController;
   private final PIDController m_rightVelocityController;
+  
+  private final DifferentialDriveOdometry m_odometry;
 
   private final double m_leftPGain = 0;
   private final double m_leftIGain = 0;
@@ -85,6 +100,12 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
     m_rightVelocityEntry = m_networkTable.getEntry("Right velocity");
     m_leftVelocityErrorEntry = m_networkTable.getEntry("Left velocity error");
     m_rightVelocityErrorEntry = m_networkTable.getEntry("Right velocity error");
+    m_yawEntry = m_networkTable.getEntry("Yaw");
+    m_pitchEntry = m_networkTable.getEntry("Pitch");
+    m_rollEntry = m_networkTable.getEntry("Roll");
+    m_xPositionEntry = m_networkTable.getEntry("X position");
+    m_yPositionEntry = m_networkTable.getEntry("Y position");
+    m_headingEntry = m_networkTable.getEntry("Heading");
 
     m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
     m_leftDriveFollower = new WPI_TalonSRX(m_leftDriveFollowerID);
@@ -105,15 +126,21 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
 
     m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
     m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
-    m_leftEncoder.setDistancePerPulse(m_wheelCircumference / m_gearRatio / m_encoderResolution);
-    m_rightEncoder.setDistancePerPulse(m_wheelCircumference / m_gearRatio / m_encoderResolution);
-    m_leftEncoder.setReverseDirection(false);
-    m_rightEncoder.setReverseDirection(true);
+    // m_leftEncoder.setDistancePerPulse(1.0 / m_encoderResolution * m_gearRatio * m_wheelCircumference);
+    // m_rightEncoder.setDistancePerPulse(1.0 / m_encoderResolution * m_gearRatio * m_wheelCircumference);
+    m_leftEncoder.setDistancePerPulse(m_distancePerTickApprox);
+    m_rightEncoder.setDistancePerPulse(m_distancePerTickApprox);
+    m_leftEncoder.setReverseDirection(true);
+    m_rightEncoder.setReverseDirection(false);
+
+    m_ahrs = new AHRS();
 
     m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
     m_feedforward = new SimpleMotorFeedforward(m_staticGain, m_velocityGain, m_accelerationGain);
     m_leftVelocityController = new PIDController(m_leftPGain, m_leftIGain, m_leftDGain);
     m_rightVelocityController = new PIDController(m_rightPGain, m_rightIGain, m_rightDGain);
+
+    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
   }
 
   @Override
@@ -122,8 +149,23 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
     m_rightDistanceEntry.setNumber(getRightDistance());
     m_leftVelocityEntry.setNumber(getLeftVelocity());
     m_rightVelocityEntry.setNumber(getRightVelocity());
+    m_yawEntry.setNumber(m_ahrs.getYaw());
+    m_pitchEntry.setNumber(m_ahrs.getPitch());
+    m_rollEntry.setNumber(m_ahrs.getRoll());
+    m_xPositionEntry.setNumber(getPose().getTranslation().getX());
+    m_yPositionEntry.setNumber(getPose().getTranslation().getY());
+    m_headingEntry.setNumber(getPose().getRotation().getDegrees());
+  }
+  
+  @Override
+  public double getMaxSpeed() {
+    return m_maxSpeed;
   }
 
+  @Override
+  public double getMaxAngularSpeed() {
+    return m_maxAngularSpeed;
+  }
   @Override
   public double getLeftDistance() {
     return m_leftEncoder.getDistance();
@@ -145,19 +187,36 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
   }
 
   @Override
+  public double getHeading() {
+    return getPose().getRotation().getDegrees();
+  }
+
+  @Override
+  public Pose2d getPose() {
+    return m_odometry.getPoseMeters();
+  }
+
+  @Override
   public void resetDriveEncoders() {
     m_leftEncoder.reset();
     m_rightEncoder.reset();
+    Pose2d newPose = new Pose2d(0, 0, m_odometry.getPoseMeters().getRotation());
+    m_odometry.resetPosition(newPose, Rotation2d.fromDegrees(m_ahrs.getYaw()));
   }
 
   @Override
-  public double getMaxSpeed() {
-    return m_maxSpeed;
+  public void resetHeading() {
+    m_ahrs.reset();
+    Pose2d newPose = new Pose2d(m_odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0));
+    m_odometry.resetPosition(newPose, Rotation2d.fromDegrees(m_ahrs.getYaw()));
   }
 
   @Override
-  public double getMaxAngularSpeed() {
-    return m_maxAngularSpeed;
+  public void resetPose() {
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
+    m_ahrs.reset();
+    m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(getHeading()));
   }
 
   @Override
@@ -185,5 +244,8 @@ public final class AleaDrivetrain extends SubsystemBase implements KinematicsDri
     m_leftVelocityErrorEntry.setNumber(wheelSpeeds.leftMetersPerSecond);
     m_rightVelocityErrorEntry.setNumber(wheelSpeeds.rightMetersPerSecond);
   }
-}
 
+  public void updateOdometry() {
+    m_odometry.update(Rotation2d.fromDegrees(m_ahrs.getYaw()), getLeftDistance(), getRightDistance());
+  }
+}

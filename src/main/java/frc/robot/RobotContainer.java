@@ -49,7 +49,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
+    // m_extreme.trigger.whileActiveOnce(Commands.driveStaight(m_aleaDrivetrain, 0.2, 1.0, 1.0));
   }
 
   /**
@@ -62,7 +62,7 @@ public class RobotContainer {
   }
 
   public double getMove() {
-    return -m_extreme.getStickY(0.3);
+    return -m_extreme.getStickY(0.1);
   }
 
   public double getTurn() {
