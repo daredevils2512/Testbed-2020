@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -85,6 +84,8 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
   // private final DoubleSolenoid.Value m_highGearValue = Value.kForward;
   // private final DoubleSolenoid.Value m_lowGearValue = Value.kReverse;
 
+  // Calculated using 7.16 meters = 25540 ticks;
+  private final double m_distancePerTickApprox = 0.0002803; // Distance in meters
   private final int m_encoderResolution = 256;
   private final double m_gearRatio = (double)3 / 1;
   private final double m_wheelDiameter = Units.inchesToMeters(6); // Wheel diameter in meters
@@ -97,13 +98,22 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
   private final double m_maxAngularSpeedLowGear = 3;
   private final double m_maxAngularSpeedHighGear = 1;
 
+  private final double m_staticGainHighGear = 1;
+  private final double m_velocityGainHighGear = 8;
+  private final double m_accelerationGainHighGear = 0;
+
+  private final double m_staticGainLowGear = 1;
+  private final double m_velocityGainLowGear = 8;
+  private final double m_accelerationGainLowGear = 0;
+
   private boolean m_isDrivingInverted = false;
 
   private double[] m_gyroData = new double[3]; // Yaw, pitch, and roll in degrees
 
   private final DifferentialDriveKinematics m_kinematics;
   // TODO: Tune feedforward values using the characterization tool
-  private final SimpleMotorFeedforward m_driveMotorFeedforward = new SimpleMotorFeedforward(1, 3);
+  private final SimpleMotorFeedforward m_driveMotorFeedforwardHighGear;
+  private final SimpleMotorFeedforward m_driveMotorFeedforwardLowGear;
   private final PIDController m_leftPIDController;
   private final PIDController m_rightPIDController;
   // TODO: Tune velocity PID
@@ -156,8 +166,10 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
 
     m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
     m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
-    m_leftEncoder.setDistancePerPulse(m_wheelCircumference / m_gearRatio / m_encoderResolution);
-    m_rightEncoder.setDistancePerPulse(m_wheelCircumference / m_gearRatio / m_encoderResolution);
+    // m_leftEncoder.setDistancePerPulse((double)1 / m_encoderResolution * m_gearRatio * m_wheelCircumference);
+    // m_rightEncoder.setDistancePerPulse((double)1 / m_encoderResolution * m_gearRatio * m_wheelCircumference);
+    m_leftEncoder.setDistancePerPulse(m_distancePerTickApprox);
+    m_rightEncoder.setDistancePerPulse(m_distancePerTickApprox);
     m_leftEncoder.setReverseDirection(false);
     m_rightEncoder.setReverseDirection(true);
 
@@ -167,6 +179,8 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
 
     // m_shifter = new DoubleSolenoid(m_shifterForwardChannel, m_shifterReverseChannel);
 
+    m_driveMotorFeedforwardHighGear = new SimpleMotorFeedforward(m_staticGainHighGear, m_velocityGainHighGear, m_accelerationGainHighGear);
+    m_driveMotorFeedforwardLowGear = new SimpleMotorFeedforward(m_staticGainLowGear, m_velocityGainLowGear, m_accelerationGainLowGear);
     m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getYaw()));
     m_leftPIDController = new PIDController(m_leftPGain, m_leftIGain, m_leftDGain);
@@ -276,9 +290,17 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
   }
 
   private void setSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
-    SmartDashboard.putNumber("LV", wheelSpeeds.leftMetersPerSecond);
-    double leftFeedforward = m_driveMotorFeedforward.calculate(wheelSpeeds.leftMetersPerSecond);
-    double rightFeedforward = m_driveMotorFeedforward.calculate(wheelSpeeds.rightMetersPerSecond);
+    double leftFeedforward;
+    double rightFeedforward;
+
+    if (getLowGear()) {
+      leftFeedforward = m_driveMotorFeedforwardLowGear.calculate(wheelSpeeds.leftMetersPerSecond);
+      rightFeedforward = m_driveMotorFeedforwardLowGear.calculate(wheelSpeeds.rightMetersPerSecond);
+    } else {
+      leftFeedforward = m_driveMotorFeedforwardHighGear.calculate(wheelSpeeds.leftMetersPerSecond);
+      rightFeedforward = m_driveMotorFeedforwardHighGear.calculate(wheelSpeeds.rightMetersPerSecond);
+    }
+
     double leftPIDOutput = m_leftPIDController.calculate(getLeftVelocity(), wheelSpeeds.leftMetersPerSecond);
     double rightPIDOutput = m_rightPIDController.calculate(getRightVelocity(), wheelSpeeds.rightMetersPerSecond);
 
