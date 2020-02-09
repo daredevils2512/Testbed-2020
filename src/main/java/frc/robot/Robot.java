@@ -8,8 +8,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utils.DriveType;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,6 +21,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
+  private final SendableChooser<DriveType> m_driveTypeChooser = new SendableChooser<>();
+  private DriveType m_currentDriveType = null;
+
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -28,6 +34,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    m_driveTypeChooser.setDefaultOption("Simple arcade drive", DriveType.SIMPLE_ARCADE_DRIVE);
+    m_driveTypeChooser.addOption("Velocity arcade drive", DriveType.VELOCITY_ARCADE_DRIVE);
+    m_driveTypeChooser.addOption("Acceleration limited simple arcade drive", DriveType.ACCELERATION_LIMITED_SIMPLE_ARCADE_DRIVE);
+    m_driveTypeChooser.addOption("Acceleration limited velocity arcade drive", DriveType.ACCELERATION_LIMITED_VELOCITY_ARCADE_DRIVE);
+    SmartDashboard.putData("Drive type", m_driveTypeChooser);
+    
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -42,6 +54,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    DriveType newDriveType = m_driveTypeChooser.getSelected();
+    if (newDriveType != m_currentDriveType) {
+      m_robotContainer.setDriveType(newDriveType);
+    }
+
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -65,6 +82,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    m_robotContainer.resetSubsystems();
+    
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -89,6 +108,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    m_robotContainer.resetSubsystems();
   }
 
   /**
@@ -102,6 +123,8 @@ public class Robot extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+
+    m_robotContainer.resetSubsystems();
   }
 
   /**
