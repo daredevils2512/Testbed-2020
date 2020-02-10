@@ -36,12 +36,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // m_drivetrain.setDefaultCommand(Commands.accelerationLimitedSimpleArcadeDrive(
-    //   m_drivetrain,
-    //   () -> getMove(),
-    //   () -> getTurn(),
-    //   2, 2));
-
     configureButtonBindings();
 
     m_autoCommand = null;
@@ -72,12 +66,14 @@ public class RobotContainer {
 
   private double getMove() {
     double move = -m_controlBoard.xbox.getLeftStickY();
-    return Math.abs(Math.pow(move, 2)) * Math.signum(move);
+    move = Math.abs(Math.pow(move, 2)) * Math.signum(move);
+    return move / 2;
   }
 
   private double getTurn() {
     double turn = -m_controlBoard.xbox.getRightStickX();
-    return Math.abs(Math.pow(turn, 2)) * Math.signum(turn);
+    turn = Math.abs(Math.pow(turn, 2)) * Math.signum(turn);
+    return turn / 2;
   }
 
   public void setDriveType(DriveType driveType) {

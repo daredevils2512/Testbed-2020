@@ -113,16 +113,39 @@ public class Commands {
     return new InstantCommand(() -> drivetrain.resetPose(), drivetrain);
   }
 
+  /**
+   * Simple percent output arcade drive
+   * @param drivetrain Drivetrain to use
+   * @param moveSupplier Forward speed supplier (-1 to +1)
+   * @param turnSupplier Turn speed supplier (-1 to +1)
+   * @return New {@link Command}
+   */
   public static Command simpleArcadeDrive(SimpleDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
     return new RunCommand(() -> drivetrain.arcadeDrive(moveSupplier.getAsDouble(), turnSupplier.getAsDouble()), drivetrain);
   }
 
+  /**
+   * Arcade drive with PID velocity control
+   * @param drivetrain Drivetrain to use
+   * @param moveSupplier Forward speed supplier (-1 to +1)
+   * @param turnSupplier Turn speed supplier (-1 to +1)
+   * @return New {@link Command}
+   */
   public static Command velocityArcadeDrive(KinematicsDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
     DoubleSupplier velocitySupplier = () -> moveSupplier.getAsDouble() * drivetrain.getMaxSpeed();
     DoubleSupplier angularVelocitySupplier = () -> turnSupplier.getAsDouble() * drivetrain.getMaxAngularSpeed();
     return new RunCommand(() -> drivetrain.velocityArcadeDrive(velocitySupplier.getAsDouble(), angularVelocitySupplier.getAsDouble()), drivetrain);
   }
 
+  /**
+   * 
+   * @param drivetrain
+   * @param moveSupplier
+   * @param turnSupplier
+   * @param maxAcceleration
+   * @param maxAngularAcceleration
+   * @return
+   */
   public static Command accelerationLimitedSimpleArcadeDrive(SimpleDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier, double maxAcceleration, double maxAngularAcceleration) {
     return new AccelerationLimitedSimpleArcadeDrive(drivetrain, moveSupplier, turnSupplier, maxAcceleration, maxAngularAcceleration);
   }

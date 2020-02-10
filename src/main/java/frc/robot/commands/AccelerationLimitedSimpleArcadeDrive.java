@@ -16,6 +16,14 @@ public final class AccelerationLimitedSimpleArcadeDrive extends CommandBase {
   private final SlewRateLimiter m_accelerationLimiter;
   private final SlewRateLimiter m_angularAccelerationLimiter;
 
+  /**
+   * Simple arcade drive with acceleration control
+   * @param drivetrain Drivetrain to use
+   * @param moveSupplier Forward speed supplier (-1 to +1)
+   * @param turnSupplier Turn speed supplier (-1 to  +1)
+   * @param maxAcceleration Units per second of move supplier
+   * @param maxAngularAcceleration Units per second of turn supplier
+   */
   public AccelerationLimitedSimpleArcadeDrive(SimpleDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier, double maxAcceleration, double maxAngularAcceleration) {
     m_maxAcceleration = maxAcceleration;
     m_maxAngularAcceleration = maxAngularAcceleration;
