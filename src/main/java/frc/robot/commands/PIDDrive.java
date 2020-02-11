@@ -28,8 +28,8 @@ public class PIDDrive extends CommandBase {
     m_drivetrain = drivetrain;
     m_moveSupplier = moveSupplier;
     m_turnSupplier = turnSupplier;
-    m_accelerationLimiter = new SlewRateLimiter(10);
-    m_angularAccelerationLimiter = new SlewRateLimiter(10);
+    m_accelerationLimiter = new SlewRateLimiter(3);
+    m_angularAccelerationLimiter = new SlewRateLimiter(3);
   }
 
   @Override
