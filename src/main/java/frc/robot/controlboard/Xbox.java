@@ -45,20 +45,11 @@ public class Xbox {
         rightTrigger = new JoystickButton(m_controller, 12);
     }
 
-
-    /**
-     * move
-     * @return move
-     */
     public double getLeftStickY() {
         return m_controller.getY(Hand.kLeft);
     }
 
-    /**
-     * turn
-     * @return turn
-     */
     public double getRightStickX() {
-        return -m_controller.getX(Hand.kRight);
+        return m_controller.getX(Hand.kRight);
     }
 }
