@@ -10,6 +10,7 @@ import frc.robot.subsystems.FalconTest;
 import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
 import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 import frc.robot.subsystems.drivetrain.SimpleDrivetrain;
+import frc.robot.vision.Pipeline;
 
 public class Commands {
   private static class SetFalconPositionCommand extends CommandBase {
@@ -150,10 +151,6 @@ public class Commands {
     return new AccelerationLimitedSimpleArcadeDrive(drivetrain, moveSupplier, turnSupplier, maxAcceleration, maxAngularAcceleration);
   }
 
-  // public static Command velocityArcadeDrive(KinematicsDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier) {
-  //   return new PIDDrive(drivetrain, moveSupplier, turnSupplier);
-  // }
-
   public static Command accelerationLimitedVelocityArcadeDrive(KinematicsDrivetrain drivetrain, DoubleSupplier moveSupplier, DoubleSupplier turnSupplier, double maxAcceleration, double maxAngularAcceleration) {
     return new AccelerationLimitedVelocityArcadeDrive(drivetrain, moveSupplier, turnSupplier, maxAcceleration, maxAngularAcceleration);
   }
@@ -164,5 +161,9 @@ public class Commands {
 
   public static <T extends KinematicsDrivetrain & OdometryDrivetrain> Command driveStaight(T drivetrain, double distance, double maxSpeed, double maxAngularSpeed) {
     return new DriveStraight<T>(drivetrain, distance, maxSpeed, maxAngularSpeed);
+  }
+
+  public static Command followBall(KinematicsDrivetrain drivetrain, Pipeline pipeline) {
+    return new FollowBall(drivetrain, pipeline);
   }
 }

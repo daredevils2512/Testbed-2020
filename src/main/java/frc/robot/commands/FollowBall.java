@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.utils.DareMath;
 import frc.robot.vision.LimelightUtil;
 import frc.robot.vision.Pipeline;
-import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.drivetrain.SimpleDrivetrain;
 
 public class FollowBall extends CommandBase {
-  private final Drivetrain m_drivetrain;
+  private final SimpleDrivetrain m_drivetrain;
   private final Pipeline m_pipeline;
 
   //constants to change the moving
@@ -25,7 +25,7 @@ public class FollowBall extends CommandBase {
 
   private double m_lastHorizontalOffset; // Last detected horizontal offset
 
-  public FollowBall(Drivetrain drivetrain, Pipeline pipeline) {
+  public FollowBall(SimpleDrivetrain drivetrain, Pipeline pipeline) {
     m_pipeline = pipeline;
     m_drivetrain = drivetrain;
     addRequirements(m_drivetrain);
@@ -44,9 +44,9 @@ public class FollowBall extends CommandBase {
         0, 1,
         -m_maxSpeed, m_maxSpeed);
 
-      // Turn speed is inversely proportional to horizontal offset
+      // Turn speed is proportional to horizontal offset
       turn = DareMath.mapRange(
-        -LimelightUtil.getHorizontalOffset(m_pipeline),
+        LimelightUtil.getHorizontalOffset(m_pipeline),
         -LimelightUtil.MAX_HORIZONTAL_OFFSET, LimelightUtil.MAX_HORIZONTAL_OFFSET,
         -m_maxTurnSpeed, m_maxTurnSpeed);
 

@@ -13,8 +13,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controlboard.Extreme;
 import frc.robot.commands.Commands;
-import frc.robot.subsystems.drivetrain.AleaDrivetrain;
+import frc.robot.subsystems.drivetrain.AtlasDrivetrain;
 import frc.robot.utils.DriveType;
+import frc.robot.vision.Pipeline;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -28,7 +29,7 @@ public class RobotContainer {
 
   @SuppressWarnings("unused")
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
-  private final AleaDrivetrain m_drivetrain = new AleaDrivetrain();
+  private final AtlasDrivetrain m_drivetrain = new AtlasDrivetrain();
 
   private final Command m_autoCommand;
 
@@ -36,6 +37,8 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    m_drivetrain.setDefaultCommand(Commands.simpleArcadeDrive(m_drivetrain, () -> getMove(), () -> getTurn()));
+
     configureButtonBindings();
 
     m_autoCommand = null;
@@ -48,7 +51,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
+    m_extreme.trigger.whileHeld(Commands.followBall(m_drivetrain, Pipeline.POWER_CELLS));
   }
 
   /**
@@ -61,7 +64,7 @@ public class RobotContainer {
   }
 
   public void resetSubsystems() {
-    // m_drivetrain.resetPose();
+    m_drivetrain.resetPose();
   }
 
   private double getMove() {
