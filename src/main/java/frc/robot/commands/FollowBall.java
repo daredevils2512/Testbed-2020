@@ -7,59 +7,63 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.vision.Limelight;
-import frc.robot.vision.Limelight.Pipeline;
+import frc.robot.utils.DareMath;
+import frc.robot.vision.LimelightUtil;
+import frc.robot.vision.Pipeline;
+import frc.robot.subsystems.drivetrain.SimpleDrivetrain;
 
 public class FollowBall extends CommandBase {
-  private final Drivetrain m_drivetrain;
-  private final Limelight m_limelight;
+  private final SimpleDrivetrain m_drivetrain;
   private final Pipeline m_pipeline;
 
   //constants to change the moving
-  private final double k_move = 0.2;
-  private final double k_turn = 0.03;
-  private final double targetArea = 70;
+  private final double m_maxSpeed = 0.5;
+  private final double m_maxTurnSpeed = 0.5;
+  private final double m_idleTurnSpeed = 0.2;
+  private final double m_targetFill = 0.7;
 
-  //move and turn
-  private double move;
-  private double turn;
+  private double m_lastHorizontalOffset; // Last detected horizontal offset
 
-  public FollowBall(Drivetrain drivetrain, Limelight limelight, Pipeline pipeline) {
-    m_limelight = limelight;
+  public FollowBall(SimpleDrivetrain drivetrain, Pipeline pipeline) {
     m_pipeline = pipeline;
     m_drivetrain = drivetrain;
     addRequirements(m_drivetrain);
   }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    m_limelight.setPipeline(m_pipeline);
-  }
-
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_limelight.hasTarget()) {
-      move = -Math.min(((targetArea - m_limelight.ta()) * k_move), 0.8);
-      turn = -(m_limelight.tx() * k_turn) <= 0.7 && m_limelight.tx() * k_turn >= -0.7 ? 
-        m_limelight.tx() * k_turn : 0.5 * Math.signum(m_limelight.tx());
+    double move;
+    double turn;
+
+    if (LimelightUtil.hasTarget(m_pipeline)) {
+      // Speed is inversely proportional to the target fill
+      move = DareMath.mapRange(
+        m_targetFill - LimelightUtil.getFill(m_pipeline),
+        0, 1,
+        -m_maxSpeed, m_maxSpeed);
+
+      // Turn speed is proportional to horizontal offset
+      turn = DareMath.mapRange(
+        LimelightUtil.getHorizontalOffset(m_pipeline),
+        -LimelightUtil.MAX_HORIZONTAL_OFFSET, LimelightUtil.MAX_HORIZONTAL_OFFSET,
+        -m_maxTurnSpeed, m_maxTurnSpeed);
+
+      // Record the current horizontal offset in case the target is lost
+      m_lastHorizontalOffset = LimelightUtil.getHorizontalOffset(m_pipeline);
     } else {
-      turn = -0.5 * Math.signum(m_limelight.getLastPosition());
-      move = 0.1;
+      // Turn towards offset of last detected target
+      turn = m_idleTurnSpeed * -Math.signum(m_lastHorizontalOffset);
+      move = 0;
     }
-    SmartDashboard.putNumber("move", move);
-    SmartDashboard.putNumber("turn", turn);
     m_drivetrain.arcadeDrive(move, turn);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_drivetrain.arcadeDrive(0.0, 0.0);
+    m_drivetrain.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.

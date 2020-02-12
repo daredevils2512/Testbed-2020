@@ -11,10 +11,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.controlboard.Extreme;
 import frc.robot.commands.Commands;
-import frc.robot.controlboard.ControlBoard;
-import frc.robot.subsystems.drivetrain.Drivetrain2020;
+import frc.robot.subsystems.drivetrain.AtlasDrivetrain;
 import frc.robot.utils.DriveType;
+import frc.robot.vision.Pipeline;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -24,11 +25,11 @@ import frc.robot.utils.DriveType;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final ControlBoard m_controlBoard = new ControlBoard();
+  private final Extreme m_extreme = new Extreme(0);
 
   @SuppressWarnings("unused")
   private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
-  private final Drivetrain2020 m_drivetrain = new Drivetrain2020();
+  private final AtlasDrivetrain m_drivetrain = new AtlasDrivetrain();
 
   private final Command m_autoCommand;
 
@@ -36,6 +37,8 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    m_drivetrain.setDefaultCommand(Commands.simpleArcadeDrive(m_drivetrain, () -> getMove(), () -> getTurn()));
+
     configureButtonBindings();
 
     m_autoCommand = null;
@@ -48,7 +51,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_controlBoard.xbox.aButton.whenPressed(Commands.resetDrivetrainPose(m_drivetrain));
+    m_extreme.trigger.whileHeld(Commands.followBall(m_drivetrain, Pipeline.POWER_CELLS));
   }
 
   /**
@@ -65,13 +68,13 @@ public class RobotContainer {
   }
 
   private double getMove() {
-    double move = -m_controlBoard.xbox.getLeftStickY();
+    double move = -m_extreme.getStickY(2);
     move = Math.abs(Math.pow(move, 2)) * Math.signum(move);
     return move / 2;
   }
 
   private double getTurn() {
-    double turn = -m_controlBoard.xbox.getRightStickX();
+    double turn = -m_extreme.getStickRotation(2);
     turn = Math.abs(Math.pow(turn, 2)) * Math.signum(turn);
     return turn / 2;
   }
