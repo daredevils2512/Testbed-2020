@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -49,6 +50,8 @@ public class Robot extends TimedRobot {
     m_robotContainer.m_powerCellLimelight.getLastPosition(); //update calls probably going to move sometimes
     m_robotContainer.m_hexagonLimelight.getLastPosition();
     m_robotContainer.m_hexagonPosition.updatePosition();
+    SmartDashboard.putBoolean("pi has target", m_robotContainer.m_piTable.hasTarget());
+    SmartDashboard.putNumberArray("closest target", m_robotContainer.m_piTable.getClosestTarget());
     CommandScheduler.getInstance().run();
   }
 

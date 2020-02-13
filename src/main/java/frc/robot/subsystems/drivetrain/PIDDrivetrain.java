@@ -144,6 +144,16 @@ public class PIDDrivetrain extends Drivetrain {
     driveMotors(wheelSpeeds);
   }
 
+  /**
+   * stops the motors to varying effect depending on wether theyre in brake or coast
+   * <p> doesnt use pid for instant stopping effect
+   */
+  public void stop() {
+    m_leftDriveMaster.setVoltage(0.0);
+    m_rightDriveMaster.setVoltage(0.0);
+    drive(0.0, 0.0);
+  }
+
   public void updateOdometry() {
     m_odometry.update(Rotation2d.fromDegrees(getYaw()), getLeftEncoderDistance(), getRightEncoderDistance());
   }

@@ -66,7 +66,7 @@ public class PiTable {
      * @return double array {0.0, 0.0, 0.0, 0.0} if no target found or if the tables screwed up
      */
     public double[] getClosestTarget() {
-        if (m_table.getSubTable("info").getEntry("closest target").getDouble(0.0) != 0) {
+        if (m_table.getSubTable("info").getEntry("closest target").getString("ball 0") != "ball 0") {
             return m_table.getEntry(m_table.getSubTable("info").getEntry("closest target").getString("ball " + 1)).getDoubleArray(new double[]{0.0, 0.0, 0.0, 0.0});
         } else {
             return new double[]{0.0, 0.0, 0.0, 0.0};
