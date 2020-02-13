@@ -41,7 +41,7 @@ public class PIDDrivetrain extends Drivetrain {
   private final double k_staticGain = 1;  //TODO: thses porbable need to be tuned as well
   private final double k_velocityGain = 2;
 
-  private final double m_trackWidth = 0.67; // Track width in meters
+  public final double m_trackWidth = 0.67; // Track width in meters
 
   private double leftFeedForeward;
   private double rightFeedForeward;

@@ -15,6 +15,7 @@ import frc.robot.subsystems.PIDDrivetrain;
 import frc.robot.subsystems.Turret;
 import frc.robot.utils.HexagonPosition;
 import frc.robot.vision.Limelight;
+import frc.robot.vision.PiTable;
 import frc.robot.vision.Limelight.Pipeline;
 import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -35,6 +36,7 @@ public class RobotContainer {
   
   public final Limelight m_powerCellLimelight = new Limelight(Pipeline.PowerCellsLimelight);
   public final Limelight m_hexagonLimelight = new Limelight(Pipeline.Hexagon2d);
+  private final PiTable m_piTable = new PiTable();
   
   private final Turret m_turret = new Turret();
   
@@ -66,6 +68,7 @@ public class RobotContainer {
     // Turn to 0 degrees
     m_controlBoard.xbox.xButton.whenPressed(Commands.turnToAngle(m_pidDrivetrain, 0));
     // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
+    m_controlBoard.xbox.rightBumper.whileHeld(new DriveToPosition(m_pidDrivetrain, m_piTable.getClosestTarget()[2], m_piTable.getClosestTarget()[1]));
 
     m_controlBoard.xbox.yButton.whenPressed(Commands.resetTurret(m_turret));
     m_controlBoard.extreme.trigger.toggleWhenPressed(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter

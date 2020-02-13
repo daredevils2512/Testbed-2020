@@ -12,16 +12,15 @@ import frc.robot.subsystems.PIDDrivetrain;
 import frc.robot.vision.PiTable;
 
 public class FollowBall extends CommandBase {
-  private final PIDDrivetrain m_drivetrain;
-  private final PiTable m_table;
-
-  private double distance;
-  private double radians;
-
+  private PIDDrivetrain m_drivetrain;
+  private PiTable m_table;
+  /**
+   * Creates a new FollowBall.
+   */
   public FollowBall(PIDDrivetrain drivetrain, PiTable table) {
     m_drivetrain = drivetrain;
     m_table = table;
-    addRequirements(m_drivetrain);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -32,8 +31,6 @@ public class FollowBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-
     
   }
 
