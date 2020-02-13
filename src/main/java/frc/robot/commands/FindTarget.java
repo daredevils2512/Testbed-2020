@@ -11,14 +11,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.subsystems.Turret;
-import frc.robot.utils.HexagonPosition;
 import frc.robot.vision.Limelight;
-import frc.robot.vision.Limelight.Pipeline;
 
 public class FindTarget extends CommandBase {
-  
   private Turret m_turret;
   private Limelight m_limelight;
   private NetworkTable m_networkTable;
@@ -26,7 +22,6 @@ public class FindTarget extends CommandBase {
   private double m_tolerance;
   private double m_targetPosition;
 
-  
   /**
    * Creates a new FindTarget.
    */
@@ -36,7 +31,6 @@ public class FindTarget extends CommandBase {
     m_tolerance = tolerance;
     m_networkTable = NetworkTableInstance.getDefault().getTable("hexagon position");
     addRequirements(m_turret);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.

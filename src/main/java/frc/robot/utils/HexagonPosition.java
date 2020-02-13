@@ -9,16 +9,15 @@ package frc.robot.utils;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 import frc.robot.vision.Limelight;
 
 /**
  * Add your docs here.
  */
 public class HexagonPosition {
-    private final Drivetrain m_drivetrain;
+    private final OdometryDrivetrain m_drivetrain;
     private final Turret m_turret;
     private final Limelight m_limelight;
     private final NetworkTable m_networkTable;
@@ -26,7 +25,7 @@ public class HexagonPosition {
     private double m_turretPosition;
     private double m_robotPosition;
 
-    public HexagonPosition(Drivetrain drivetrain, Turret turret, Limelight limelight) {
+    public HexagonPosition(OdometryDrivetrain drivetrain, Turret turret, Limelight limelight) {
         m_drivetrain = drivetrain;
         m_turret = turret;
         m_limelight = limelight;
