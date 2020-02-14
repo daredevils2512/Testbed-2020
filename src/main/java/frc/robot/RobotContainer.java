@@ -42,7 +42,7 @@ public class RobotContainer {
   public final Limelight m_hexagonLimelight = new Limelight(Pipeline.Hexagon2d);
   public final PiTable m_piTable = new PiTable();
   
-  private final AtlasDrivetrain m_atlasDrivetrain = new AtlasDrivetrain();
+  public final AtlasDrivetrain m_atlasDrivetrain = new AtlasDrivetrain();
   private final Turret m_turret = new Turret();
   
   public final HexagonPosition m_hexagonPosition = new HexagonPosition(m_atlasDrivetrain, m_turret, m_hexagonLimelight);
@@ -65,6 +65,8 @@ public class RobotContainer {
     configureButtonBindings();
 
     m_autoCommand = null;
+  
+
   }
 
   /**

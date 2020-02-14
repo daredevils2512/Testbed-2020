@@ -7,6 +7,13 @@
 
 package frc.robot.subsystems.drivetrain;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Properties;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -16,6 +23,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -36,11 +44,10 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   private final NetworkTableEntry m_yPositionEntry;
   private final NetworkTableEntry m_headingEntry;
 
-  private final int m_leftDriveMasterID = 1;
-  private final int m_leftDriveFollowerID = 2;
-  private final int m_rightDriveMasterID = 3;
-  private final int m_rightDriveFollowerID = 4;
-
+  private final int m_leftDriveMasterID;
+  private final int m_leftDriveFollowerID;
+  private final int m_rightDriveMasterID;
+  private final int m_rightDriveFollowerID;
   private final WPI_TalonSRX m_leftDriveMaster;
   private final WPI_TalonSRX m_leftDriveFollower;
   private final WPI_TalonSRX m_rightDriveMaster;
@@ -61,13 +68,17 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   private final SimpleMotorFeedforward m_feedforward;
   private final PIDController m_leftPIDController;
   private final PIDController m_rightPIDController;
+  private Properties properties;
 
-  private final double m_leftPGain = 0;
-  private final double m_leftIGain = 0;
-  private final double m_leftDGain = 0;
-  private final double m_rightPGain = 0;
-  private final double m_rightIGain = 0;
-  private final double m_rightDGain = 0;
+  private static final String PROPERTIES_FILE = "/atlas.properties";
+
+
+  private double m_leftPGain = 0;
+  private double m_leftIGain = 0;
+  private double m_leftDGain = 0;
+  private double m_rightPGain = 0;
+  private double m_rightIGain = 0;
+  private double m_rightDGain = 0;
 
   private final double m_maxSpeed = 1; // Speed in meters per second
   private final double m_maxAngularSpeed = 4; // Angular speed in radians per second
@@ -85,7 +96,36 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   /**
    * Creates a new AtlasDrivetrain.
    */
-  public AtlasDrivetrain() {
+  public AtlasDrivetrain() {  
+
+    Properties defaultProperties = new Properties();
+    properties = new Properties(defaultProperties);
+    try {
+      InputStream inputStream = new FileInputStream(Filesystem.getDeployDirectory() + PROPERTIES_FILE);
+      defaultProperties.load(inputStream);
+      InputStream robotStream = new FileInputStream(Filesystem.getOperatingDirectory() + PROPERTIES_FILE);
+      properties.load(robotStream);
+    } catch(IOException e) {
+      e.printStackTrace();
+    }    
+
+    m_leftDriveMasterID = Integer.parseInt(properties.getProperty("drivetrain.leftMasterId"));
+    m_leftDriveFollowerID = Integer.parseInt(properties.getProperty("drivetrain.leftFollowerId"));
+    m_rightDriveMasterID = Integer.parseInt(properties.getProperty("drivetrain.rightMasterId"));
+    m_rightDriveFollowerID = Integer.parseInt(properties.getProperty("drivetrain.rightFollowerId"));
+
+    m_leftPGain = Double.parseDouble(properties.getProperty("drivetrain.leftPGain", "0.0"));
+    m_leftIGain = Double.parseDouble(properties.getProperty("drivetrain.leftIGain", "0.0"));
+    m_leftDGain = Double.parseDouble(properties.getProperty("drivetrain.leftDGain", "0.0"));
+
+    m_rightPGain = Double.parseDouble(properties.getProperty("drivetrain.rightPGain", "0.0"));
+    m_rightIGain = Double.parseDouble(properties.getProperty("drivetrain.rightIGain", "0.0"));
+    m_rightDGain = Double.parseDouble(properties.getProperty("drivetrain.rightDGain", "0.0"));
+
+    m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
+    m_leftDriveFollower = new WPI_TalonSRX(m_leftDriveFollowerID);
+    m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
+    m_rightDriveFollower = new WPI_TalonSRX(m_rightDriveFollowerID);
     m_networkTable = NetworkTableInstance.getDefault().getTable(getName());
     m_leftVelocityEntry = m_networkTable.getEntry("Left velocity");
     m_rightVelocityEntry = m_networkTable.getEntry("Right velocity");
@@ -93,10 +133,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
     m_yPositionEntry = m_networkTable.getEntry("Y position");
     m_headingEntry = m_networkTable.getEntry("Heading");
 
-    m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
-    m_leftDriveFollower = new WPI_TalonSRX(m_leftDriveFollowerID);
-    m_rightDriveMaster = new WPI_TalonSRX(m_rightDriveMasterID);
-    m_rightDriveFollower = new WPI_TalonSRX(m_rightDriveFollowerID);
+
     m_leftDriveMaster.configFactoryDefault();
     m_leftDriveFollower.configFactoryDefault();
     m_rightDriveMaster.configFactoryDefault();
@@ -127,6 +164,15 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
     m_feedforward = new SimpleMotorFeedforward(m_staticGain, m_velocityGain);
     m_leftPIDController = new PIDController(m_leftPGain, m_leftIGain, m_leftDGain);
     m_rightPIDController = new PIDController(m_rightPGain, m_rightIGain, m_rightDGain);
+
+    m_networkTable.getEntry("left P").setDouble(m_leftPGain); 
+    m_networkTable.getEntry("left I").setDouble(m_leftIGain);
+    m_networkTable.getEntry("left D").setDouble(m_leftDGain); 
+
+    m_networkTable.getEntry("right P").setDouble(m_rightPGain); 
+    m_networkTable.getEntry("right P").setDouble(m_rightIGain); 
+    m_networkTable.getEntry("right P").setDouble(m_rightDGain); 
+
   }
 
   @Override
@@ -215,6 +261,14 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   }
 
   private void setWheelSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
+    m_leftPGain = m_networkTable.getEntry("left P").getDouble(0.0);
+    m_leftIGain = m_networkTable.getEntry("left I").getDouble(0.0);
+    m_leftDGain = m_networkTable.getEntry("left D").getDouble(0.0);
+
+    m_rightPGain = m_networkTable.getEntry("right P").getDouble(0.0);
+    m_rightIGain = m_networkTable.getEntry("right I").getDouble(0.0);
+    m_rightDGain = m_networkTable.getEntry("right D").getDouble(0.0);
+
     double leftFeedforward = m_feedforward.calculate(wheelSpeeds.leftMetersPerSecond);
     double rightFeedforward = m_feedforward.calculate(wheelSpeeds.rightMetersPerSecond);
     double leftPIDOutput = m_leftPIDController.calculate(m_leftEncoder.getRate(), wheelSpeeds.leftMetersPerSecond);
@@ -244,5 +298,22 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
   private void updatePose() {
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftDistance(), getRightDistance());
+  }
+
+  public void savePID() {
+    try {
+      OutputStream outputStream = new FileOutputStream(Filesystem.getOperatingDirectory() + PROPERTIES_FILE);
+      properties.setProperty("leftPGain", "" + m_networkTable.getEntry("left P").getDouble(0.0));
+      properties.setProperty("leftIGain", "" + m_networkTable.getEntry("left I").getDouble(0.0));
+      properties.setProperty("leftDGain", "" + m_networkTable.getEntry("left D").getDouble(0.0));
+
+      properties.setProperty("rightPGain", "" + m_networkTable.getEntry("right P").getDouble(0.0));
+      properties.setProperty("rightIGain", "" + m_networkTable.getEntry("right I").getDouble(0.0));
+      properties.setProperty("rightDGain", "" + m_networkTable.getEntry("right D").getDouble(0.0));
+      properties.store(outputStream, "saved pid");
+
+    } catch(IOException e) {
+      e.printStackTrace();
+    }
   }
 }
