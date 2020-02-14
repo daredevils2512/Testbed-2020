@@ -19,8 +19,8 @@ public class FollowBall extends CommandBase {
   private PiTable m_table;
   private NetworkTable m_networkTable;
 
-  private double move = 0.2;
-  private double turn = 0.02;
+  private double move = 0.0;
+  private double turn = 0.0;
   private double k_moveSpeed;
   private double k_turnSpeed;
   /**
