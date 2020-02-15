@@ -52,15 +52,39 @@ public class Extreme {
     return Math.abs(value) < deadband ? 0 : value;
   }
 
+  public double getStickX() {
+    return m_joystick.getRawAxis(m_stickXAxis);
+  }
+
   public double getStickX(double deadband) {
-    return deadband(m_joystick.getRawAxis(m_stickXAxis), deadband);
+    return deadband(getStickX(), deadband);
+  }
+
+  public double getStickY() {
+    return m_joystick.getRawAxis(m_stickYAxis);
   }
 
   public double getStickY(double deadband) {
-    return deadband(m_joystick.getRawAxis(m_stickYAxis), deadband);
+    return deadband(getStickY(), deadband);
+  }
+
+  public double getStickRotation() {
+    return m_joystick.getRawAxis(m_stickRotationAxis);
   }
 
   public double getStickRotation(double deadband) {
-    return deadband(m_joystick.getRawAxis(m_stickRotationAxis), deadband);
+    return deadband(getStickRotation(), deadband);
+  }
+
+  public double getPOVDirection() {
+    return m_joystick.getPOV();
+  }
+
+  public double getPOVX() {
+    return Math.sin(Math.toRadians(getPOVDirection()));
+  }
+
+  public double getPOVY() {
+    return Math.cos(Math.toRadians(getPOVDirection()));
   }
 }

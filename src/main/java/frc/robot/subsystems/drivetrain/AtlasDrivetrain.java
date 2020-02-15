@@ -62,20 +62,22 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   private final PIDController m_leftPIDController;
   private final PIDController m_rightPIDController;
 
-  private final double m_leftPGain = 0.5;
+  private final double m_leftPGain = 0;
   private final double m_leftIGain = 0;
   private final double m_leftDGain = 0;
-  private final double m_rightPGain = 0.5;
+  private final double m_rightPGain = 0;
   private final double m_rightIGain = 0;
   private final double m_rightDGain = 0;
 
   private final double m_maxSpeed = 1; // Speed in meters per second
   private final double m_maxAngularSpeed = 4; // Angular speed in radians per second
 
+  private final double m_distancePerTickApprox = 0.0006; // Distance in meters
   private final double m_wheelDiameter = Units.inchesToMeters(4); // Diameter in meters
+  private final double m_gearRatio = 1; // Nobody knows what this is
   private final double m_trackWidth = 0.67; // Width in meters
-  private final double m_staticGain = 1;
-  private final double m_velocityGain = 2;
+  private final double m_staticGain = 0.35; // Guess based on Alea tuning
+  private final double m_velocityGain = 9; // Guess based on Alea tuning
   private final int m_encoderResolution = 128; // Ticks per revolution
 
   private double[] m_gyroData = new double[3]; // Yaw, pitch, roll set by the pigeon
@@ -110,10 +112,12 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
     m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
     m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
-    m_leftEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
-    m_rightEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
-    m_leftEncoder.setReverseDirection(false);
-    m_rightEncoder.setReverseDirection(true);
+    // m_leftEncoder.setDistancePerPulse(1.0 / m_encoderResolution * m_gearRatio * m_wheelDiameter * Math.PI);
+    // m_rightEncoder.setDistancePerPulse(1.0 / m_encoderResolution * m_gearRatio * m_wheelDiameter * Math.PI);
+    m_leftEncoder.setDistancePerPulse(m_distancePerTickApprox);
+    m_rightEncoder.setDistancePerPulse(m_distancePerTickApprox);
+    m_leftEncoder.setReverseDirection(true);
+    m_rightEncoder.setReverseDirection(false);
 
     m_pigeon = new PigeonIMU(m_pigeonID);
     m_pigeon.configFactoryDefault();
@@ -159,7 +163,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
   @Override
   public double getHeading() {
-    return m_gyroData[0];
+    return -m_pigeon.getFusedHeading();
   }
 
   @Override
@@ -180,15 +184,16 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   public void resetDriveEncoders() {
     m_leftEncoder.reset();
     m_rightEncoder.reset();
-    m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(getHeading()));
+    Pose2d newPose = new Pose2d(0, 0, Rotation2d.fromDegrees(getHeading()));
+    m_odometry.resetPosition(newPose, Rotation2d.fromDegrees(getHeading()));
   }
 
   @Override
   public void resetHeading() {
     m_pigeon.setFusedHeading(0);
     m_pigeon.setYaw(0);
-    Pose2d pose = m_odometry.getPoseMeters();
-    m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
+    Pose2d newPose = new Pose2d(m_odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0));
+    m_odometry.resetPosition(newPose, Rotation2d.fromDegrees(getHeading()));
   }
 
   @Override
@@ -223,7 +228,14 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   public void resetPose() {
     resetDriveEncoders();
     resetHeading();
-    m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(0));
+    m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(getHeading()));
+  }
+
+  @Override
+  public void resetPose(Pose2d newPose) {
+    resetDriveEncoders();
+    resetHeading();
+    m_odometry.resetPosition(newPose, Rotation2d.fromDegrees(getHeading()));
   }
 
   private void updateGyroData() {

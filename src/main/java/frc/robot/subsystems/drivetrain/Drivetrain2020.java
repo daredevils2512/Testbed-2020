@@ -363,6 +363,14 @@ public class Drivetrain2020 extends SubsystemBase implements KinematicsDrivetrai
     m_odometry.resetPosition(newPose, Rotation2d.fromDegrees(m_pigeon.getFusedHeading()));
   }
 
+  @Override
+  public void resetPose(Pose2d newPose) {
+    m_leftEncoder.reset();
+    m_rightEncoder.reset();
+    m_pigeon.setFusedHeading(0);
+    m_odometry.resetPosition(newPose, Rotation2d.fromDegrees(m_pigeon.getFusedHeading()));
+  }
+
   /**
    * Must be called periodically to maintain an accurate position and heading
    */

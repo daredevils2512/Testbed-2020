@@ -8,14 +8,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controlboard.Extreme;
 import frc.robot.commands.Commands;
 import frc.robot.subsystems.drivetrain.AtlasDrivetrain;
 import frc.robot.utils.DriveType;
-import frc.robot.vision.Pipeline;
+import frc.robot.subsystems.Turret;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -27,17 +26,25 @@ import frc.robot.vision.Pipeline;
 public class RobotContainer {
   private final Extreme m_extreme = new Extreme(0);
 
-  @SuppressWarnings("unused")
-  private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  // @SuppressWarnings("unused")
+  // private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  
   private final AtlasDrivetrain m_drivetrain = new AtlasDrivetrain();
-
-  private final Command m_autoCommand;
+  private final Turret m_turret = new Turret();
+  
+  private final Command m_autoCommand;  
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_drivetrain.setDefaultCommand(Commands.simpleArcadeDrive(m_drivetrain, () -> getMove(), () -> getTurn()));
+    m_drivetrain.setDefaultCommand(Commands.velocityArcadeDrive(
+      m_drivetrain,
+      () -> -m_extreme.getStickY(0.3),
+      () -> m_extreme.getStickRotation(0.3)));
+    m_turret.setDefaultCommand(Commands.runTurret(
+      m_turret,
+      () -> m_extreme.getPOVX()));
 
     configureButtonBindings();
 
@@ -51,7 +58,12 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_extreme.trigger.whileHeld(Commands.followBall(m_drivetrain, Pipeline.POWER_CELLS));
+    m_extreme.baseFrontLeft.whenPressed(Commands.resetPose(m_drivetrain));
+
+    m_extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
+    // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
+
+    m_extreme.sideButton.whenPressed(Commands.resetTurret(m_turret));
   }
 
   /**

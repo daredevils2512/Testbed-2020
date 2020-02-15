@@ -12,4 +12,5 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 public interface OdometryDrivetrain extends EncoderDrivetrain, GyroDrivetrain {
   Pose2d getPose();
   void resetPose();
+  void resetPose(Pose2d newPose);
 }
