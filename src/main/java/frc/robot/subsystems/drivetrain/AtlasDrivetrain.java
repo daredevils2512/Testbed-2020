@@ -36,10 +36,10 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   private final NetworkTableEntry m_yPositionEntry;
   private final NetworkTableEntry m_headingEntry;
 
-  private final int m_leftDriveMasterID = 1;
-  private final int m_leftDriveFollowerID = 2;
-  private final int m_rightDriveMasterID = 3;
-  private final int m_rightDriveFollowerID = 4;
+  private final int m_leftDriveMasterID = 10;
+  private final int m_leftDriveFollowerID = 11;
+  private final int m_rightDriveMasterID = 12;
+  private final int m_rightDriveFollowerID = 13;
 
   private final WPI_TalonSRX m_leftDriveMaster;
   private final WPI_TalonSRX m_leftDriveFollower;
@@ -53,7 +53,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   private final Encoder m_leftEncoder;
   private final Encoder m_rightEncoder;
 
-  private final int m_pigeonID = 5;
+  private final int m_pigeonID = 14;
   private final PigeonIMU m_pigeon;
 
   private final DifferentialDriveKinematics m_kinematics;
