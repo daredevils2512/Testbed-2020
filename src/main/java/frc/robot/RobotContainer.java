@@ -12,8 +12,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.controlboard.Extreme;
 import frc.robot.commands.Commands;
-import frc.robot.subsystems.drivetrain.AtlasDrivetrain;
+import frc.robot.subsystems.drivetrain.Drivetrain2020;
 import frc.robot.utils.DriveType;
+import frc.robot.vision.Pipeline;
 import frc.robot.subsystems.Turret;
 
 /**
@@ -29,7 +30,7 @@ public class RobotContainer {
   // @SuppressWarnings("unused")
   // private final PowerDistributionPanel m_pdp = new PowerDistributionPanel();
   
-  private final AtlasDrivetrain m_drivetrain = new AtlasDrivetrain();
+  private final Drivetrain2020 m_drivetrain = new Drivetrain2020();
   private final Turret m_turret = new Turret();
   
   private final Command m_autoCommand;  
@@ -60,10 +61,9 @@ public class RobotContainer {
   private void configureButtonBindings() {
     m_extreme.baseFrontLeft.whenPressed(Commands.resetPose(m_drivetrain));
 
-    m_extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
-    // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
-
-    m_extreme.sideButton.whenPressed(Commands.resetTurret(m_turret));
+    m_extreme.baseFrontRight.whenPressed(Commands.resetTurret(m_turret));
+    m_extreme.baseMiddleLeft.whileHeld(Commands.runTurretPID(m_turret, 0.0));
+    m_extreme.trigger.whileActiveContinuous(Commands.trackTarget(m_turret, Pipeline.POWER_CELLS, () -> m_drivetrain.getPose()));
   }
 
   /**

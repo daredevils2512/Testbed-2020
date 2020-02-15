@@ -17,6 +17,10 @@ public enum Pipeline {
     m_id = id;
   }
 
+  public Limelight getLimelight() {
+    return m_limelight;
+  }
+
   public int getID() {
     return m_id;
   }

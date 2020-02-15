@@ -1,7 +1,9 @@
 package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -95,6 +97,10 @@ public class Commands {
 
   public static Command findTarget(Turret turret, Limelight limelight, double tolerance) {
     return new FindTarget(turret, tolerance);
+  }
+  
+  public static Command trackTarget(Turret turret, Pipeline pipeline, Supplier<Pose2d> robotPoseSupplier) {
+    return new TrackTarget(turret, pipeline, robotPoseSupplier);
   }
 
   public static Command followBall(KinematicsDrivetrain drivetrain, Pipeline pipeline) {

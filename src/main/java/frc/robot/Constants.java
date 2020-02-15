@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import frc.robot.utils.Conversions;
 
 /**
@@ -18,5 +21,10 @@ import frc.robot.utils.Conversions;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final double hexagonCenterHeight = Conversions.feetAndInchesToInches(8, 2.25); // Height in inches
+  public static final double hexagonCenterHeight = Conversions.feetAndInchesToInches(8, 2.25); // Height in inches
+
+  // TODO: Check target position/height
+  // At (0, 0) facing backwards
+  public static final Pose2d TARGET_POSE_FIELD_RELATIVE = new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(180));
+  public static final double TARGET_CENTER_HEIGHT = Conversions.feetAndInchesToMeters(8, 2.25);
 }

@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class Turret extends SubsystemBase {
   private final NetworkTable m_networkTable;
@@ -22,6 +23,9 @@ public class Turret extends SubsystemBase {
 
   private final double m_maxTurnDegrees = 180;
   private final double m_tolerance = 5;
+
+  private final double m_maxAngle = 360;
+  private final double m_minAngle = -360;
 
   // TODO: Tune position PID
   private final int m_positionSlot = 0;
@@ -92,6 +96,14 @@ public class Turret extends SubsystemBase {
     return toDegrees(getPosition());
   }
 
+  public double getMaxAngle() {
+    return m_maxAngle;
+  }
+
+  public double getMinAngle() {
+    return m_minAngle;
+  }
+
   public void resetEncoder() {
     m_turretMaster.setSelectedSensorPosition(0);
   }
@@ -116,16 +128,16 @@ public class Turret extends SubsystemBase {
    * @param angle Angle in degrees
    */
   public void setTargetAngle(double angle) {
+    angle = MathUtil.clamp(angle, getMinAngle(), getMaxAngle());
     m_turretMaster.set(ControlMode.Position, toEncoderPulses(angle));
   }
 
   private double toDegrees(int encoderPulses) {
-    // return ((double)encoderPulses / m_encoderResolution) * 360 * m_gearRatio;
-    return ((double)encoderPulses / m_encoderResolution) * 360 * m_gearRatio;
+    return (double)encoderPulses / m_encoderResolution * m_gearRatio * 360;
   }
 
   //returns a fused heading problaby
   private int toEncoderPulses(double angle) {
-    return (int)(angle / (360 * m_gearRatio) *  m_encoderResolution);
+    return (int)(angle / 360 / m_gearRatio * m_encoderResolution);
   }
 }
