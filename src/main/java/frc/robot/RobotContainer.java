@@ -43,9 +43,9 @@ public class RobotContainer {
   public final PiTable m_piTable = new PiTable();
   
   public final AtlasDrivetrain m_atlasDrivetrain = new AtlasDrivetrain();
-  private final Turret m_turret = new Turret();
+  // private final Turret m_turret = new Turret();
   
-  public final HexagonPosition m_hexagonPosition = new HexagonPosition(m_atlasDrivetrain, m_turret, m_hexagonLimelight);
+  // public final HexagonPosition m_hexagonPosition = new HexagonPosition(m_atlasDrivetrain, m_turret, m_hexagonLimelight);
   public final FollowBall m_followBall = new FollowBall(m_atlasDrivetrain, m_piTable);
 
   private final Command m_autoCommand;  
@@ -58,9 +58,9 @@ public class RobotContainer {
       m_atlasDrivetrain,
       () -> -m_extreme.getStickY(0.3),
       () -> -m_extreme.getStickX(0.3)));
-    m_turret.setDefaultCommand(Commands.runTurret(
-      m_turret,
-      () -> m_extreme.getPOVX()));
+    // m_turret.setDefaultCommand(Commands.runTurret(
+      // m_turret,
+      // () -> m_extreme.getPOVX()));
 
     configureButtonBindings();
 
@@ -78,12 +78,13 @@ public class RobotContainer {
   private void configureButtonBindings() {
     m_extreme.baseFrontLeft.whenPressed(Commands.resetPose(m_atlasDrivetrain));
 
-    m_extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
+    // m_extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0));
     // m_controlBoard.extreme.trigger.whileHeld(Commands.runTurretPID(m_turret, 0.0)); //was mainly for testing
     // m_controlBoard.xbox.rightBumper.whileHeld(new DriveToPosition(m_atlasDrivetrain, m_piTable.getClosestTarget()[2], m_piTable.getClosestTarget()[1]));
     m_extreme.baseMiddleRight.whileHeld(new FollowBall(m_atlasDrivetrain, m_piTable));
-    m_extreme.sideButton.whenPressed(Commands.resetTurret(m_turret));
-    m_extreme.trigger.toggleWhenPressed(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter
+    // m_extreme.sideButton.whenPressed(Commands.resetTurret(m_turret));
+    // m_extreme.trigger.toggleWhenPressed(Commands.findTarget(m_turret, m_hexagonLimelight, 1)); //will eventually be separate limelight mounted to shooter
+    m_extreme.trigger.whenPressed(Commands.followPath(m_atlasDrivetrain, "test.wpilib.json"));
   }
 
   /**

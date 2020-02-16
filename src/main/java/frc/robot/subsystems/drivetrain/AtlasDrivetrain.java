@@ -60,7 +60,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   private final Encoder m_leftEncoder;
   private final Encoder m_rightEncoder;
 
-  private final int m_pigeonID = 5;
+  private final int m_pigeonID = 3;
   private final PigeonIMU m_pigeon;
 
   private final DifferentialDriveKinematics m_kinematics;
@@ -156,7 +156,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
     m_leftEncoder.setReverseDirection(true);
     m_rightEncoder.setReverseDirection(false);
 
-    m_pigeon = new PigeonIMU(m_pigeonID);
+    m_pigeon = new PigeonIMU(m_rightDriveMaster);
     m_pigeon.configFactoryDefault();
 
     m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
@@ -260,6 +260,11 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
     setWheelSpeeds(m_kinematics.toWheelSpeeds(new ChassisSpeeds(velocity, 0, angularVelocity)));
   }
 
+  public void voltageTank(double left, double right) {
+    m_leftDriveMaster.setVoltage(left);
+    m_rightDriveMaster.setVoltage(right);
+  }
+
   private void setWheelSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
     m_leftPGain = m_networkTable.getEntry("left P").getDouble(0.0);
     m_leftIGain = m_networkTable.getEntry("left I").getDouble(0.0);
@@ -298,6 +303,10 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
   private void updatePose() {
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftDistance(), getRightDistance());
+  }
+
+  public DifferentialDriveKinematics getKinematics() {
+    return m_kinematics;
   }
 
   public void savePID() {
