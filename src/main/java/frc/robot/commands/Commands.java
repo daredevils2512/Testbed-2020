@@ -1,12 +1,20 @@
 package frc.robot.commands;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.FalconTest;
+import frc.robot.subsystems.drivetrain.AtlasDrivetrain;
 import frc.robot.subsystems.drivetrain.KinematicsDrivetrain;
 import frc.robot.subsystems.drivetrain.OdometryDrivetrain;
 import frc.robot.subsystems.drivetrain.SimpleDrivetrain;
@@ -166,4 +174,22 @@ public class Commands {
   public static Command followBall(KinematicsDrivetrain drivetrain, Pipeline pipeline) {
     return new FollowBall(drivetrain, pipeline);
   }
+  public static Command followPath(AtlasDrivetrain drivetrain,String file) {
+    Trajectory trajectory;
+    try {
+      Path path = Filesystem.getDeployDirectory().toPath().resolve("paths/" + file);
+      trajectory = TrajectoryUtil.fromPathweaverJson(path);
+    } catch(IOException e) {
+      trajectory = null;
+      e.printStackTrace(); 
+    }
+    return new RamseteCommand(trajectory, drivetrain::getPose, new RamseteController(),
+     drivetrain.getKinematics(), drivetrain::voltageTank , drivetrain)
+     .andThen(()->drivetrain.voltageTank(0,0));
+  }
+
+
+
+
+
 }

@@ -115,7 +115,7 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
     m_leftEncoder.setReverseDirection(false);
     m_rightEncoder.setReverseDirection(true);
 
-    m_pigeon = new PigeonIMU(m_pigeonID);
+    m_pigeon = new PigeonIMU(m_rightDriveMaster);
     m_pigeon.configFactoryDefault();
 
     m_kinematics = new DifferentialDriveKinematics(m_trackWidth);
@@ -174,6 +174,15 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
+  }
+
+  public DifferentialDriveKinematics getKinematics(){
+    return m_kinematics;
+  }
+  public void voltageTank(double left, double right){
+    m_leftDriveMaster.setVoltage(left);
+    m_rightDriveMaster.setVoltage(right);
+
   }
 
   @Override

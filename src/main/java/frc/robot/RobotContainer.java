@@ -68,13 +68,13 @@ public class RobotContainer {
   }
 
   private double getMove() {
-    double move = -m_extreme.getStickY(2);
+    double move = -m_extreme.getStickY(.2);
     move = Math.abs(Math.pow(move, 2)) * Math.signum(move);
     return move / 2;
   }
 
   private double getTurn() {
-    double turn = -m_extreme.getStickRotation(2);
+    double turn = -m_extreme.getStickRotation(.2);
     turn = Math.abs(Math.pow(turn, 2)) * Math.signum(turn);
     return turn / 2;
   }
