@@ -24,9 +24,11 @@ import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
+
 
 public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDrivetrain, OdometryDrivetrain {
   private final NetworkTable m_networkTable;
@@ -80,6 +82,17 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
   private double[] m_gyroData = new double[3]; // Yaw, pitch, roll set by the pigeon
 
+  protected PIDController m_rightPIDcontroller;
+  protected PIDController m_leftPIDcontroller;
+
+  private double k_lP = 0.5; //left PID
+  private double k_lI = 0.0; //TODO: tune these
+  private double k_lD = 0.0;
+
+  private double k_rP = 0.5; //right PID -- right P has to be negative i think
+  private double k_rI = 0.0; 
+  private double k_rD = 0.0;
+
   /**
    * Creates a new AtlasDrivetrain.
    */
@@ -90,6 +103,9 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
     m_xPositionEntry = m_networkTable.getEntry("X position");
     m_yPositionEntry = m_networkTable.getEntry("Y position");
     m_headingEntry = m_networkTable.getEntry("Heading");
+
+    m_rightPIDcontroller = new PIDController(k_rP, k_rI, k_rD, 0.2);
+    m_leftPIDcontroller = new PIDController(k_lP, k_lI, k_lD, 0.2);
 
     m_leftDriveMaster = new WPI_TalonSRX(m_leftDriveMasterID);
     m_leftDriveFollower = new WPI_TalonSRX(m_leftDriveFollowerID);
@@ -110,8 +126,10 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
 
     m_leftEncoder = new Encoder(m_leftEncoderChannelA, m_leftEncoderChannelB);
     m_rightEncoder = new Encoder(m_rightEncoderChannelA, m_rightEncoderChannelB);
-    m_leftEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
-    m_rightEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
+    // m_leftEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
+    // m_rightEncoder.setDistancePerPulse(Math.PI * m_wheelDiameter / m_encoderResolution);
+    m_leftEncoder.setDistancePerPulse(0.0006);
+    m_rightEncoder.setDistancePerPulse(0.0006);
     m_leftEncoder.setReverseDirection(false);
     m_rightEncoder.setReverseDirection(true);
 
@@ -135,6 +153,8 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
     m_xPositionEntry.setNumber(getPose().getTranslation().getX());
     m_yPositionEntry.setNumber(getPose().getTranslation().getY());
     m_headingEntry.setNumber(getPose().getRotation().getDegrees());
+    SmartDashboard.putNumber("left set point", m_leftPIDcontroller.getSetpoint());
+    SmartDashboard.putNumber("right set point", m_rightPIDcontroller.getSetpoint());
   }
 
   @Override
@@ -182,8 +202,26 @@ public final class AtlasDrivetrain extends SubsystemBase implements KinematicsDr
   public void voltageTank(double left, double right){
     m_leftDriveMaster.setVoltage(left);
     m_rightDriveMaster.setVoltage(right);
-
+    double[] voltage = {left, right};
+    SmartDashboard.putNumberArray("motor voltages", voltage);
   }
+
+public SimpleMotorFeedforward getFeedForward() {
+  return m_feedforward; 
+}
+
+public PIDController getRightController() {
+  return m_rightPIDcontroller;
+}
+  
+public PIDController getLeftController(){
+  return m_leftPIDController;
+}
+
+public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+ return new DifferentialDriveWheelSpeeds(this.getLeftVelocity(), this.getRightVelocity());
+}
+
 
   @Override
   public void resetDriveEncoders() {

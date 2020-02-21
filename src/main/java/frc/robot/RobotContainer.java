@@ -51,7 +51,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_extreme.trigger.whileHeld(Commands.followBall(m_drivetrain, Pipeline.POWER_CELLS));
+    m_extreme.trigger.whenPressed(Commands.followPath(m_drivetrain,"test2.wpilib.json"));
   }
 
   /**
@@ -74,7 +74,7 @@ public class RobotContainer {
   }
 
   private double getTurn() {
-    double turn = -m_extreme.getStickRotation(.2);
+    double turn = -m_extreme.getStickX(.2);
     turn = Math.abs(Math.pow(turn, 2)) * Math.signum(turn);
     return turn / 2;
   }

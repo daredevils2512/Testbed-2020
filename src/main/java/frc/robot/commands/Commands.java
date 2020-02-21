@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.Filesystem;
@@ -177,19 +178,18 @@ public class Commands {
   public static Command followPath(AtlasDrivetrain drivetrain,String file) {
     Trajectory trajectory;
     try {
-      Path path = Filesystem.getDeployDirectory().toPath().resolve("paths/" + file);
+      // Path path = Filesystem.getDeployDirectory().toPath().resolve("paths/output/" + file);
+      Path path = Paths.get(Filesystem.getDeployDirectory() + "/paths/output/" + file);
       trajectory = TrajectoryUtil.fromPathweaverJson(path);
     } catch(IOException e) {
       trajectory = null;
       e.printStackTrace(); 
     }
-    return new RamseteCommand(trajectory, drivetrain::getPose, new RamseteController(),
-     drivetrain.getKinematics(), drivetrain::voltageTank , drivetrain)
-     .andThen(()->drivetrain.voltageTank(0,0));
-  }
-
-
-
-
-
+    return new RamseteCommand(trajectory, drivetrain::getPose,  new RamseteController(), drivetrain.getFeedForward(),
+    drivetrain.getKinematics(), drivetrain::getWheelSpeeds,  drivetrain.getLeftController(),
+        drivetrain.getRightController(), drivetrain::voltageTank, drivetrain)
+        .andThen(()->drivetrain.voltageTank(0,0))
+        .andThen(()->System.out.println("path exututed"));
+    }
+  
 }
